@@ -1,6 +1,9 @@
 /* Dataset Interfaces */
 /* https://rdf.js.org/dataset-spec/ */
 
+import { Quad, BaseQuad, Term } from './data-model';
+import { Stream } from './stream';
+
 export interface DatasetCore<OutQuad extends BaseQuad = Quad, InQuad extends BaseQuad = OutQuad> {
     /**
      * A non-negative integer that specifies the number of quads in the set.

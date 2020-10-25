@@ -1,5 +1,5 @@
 import { BlankNode, DataFactory, Dataset, DatasetCore, DatasetCoreFactory, DatasetFactory, DefaultGraph, Literal,
-  NamedNode, Quad, BaseQuad, Sink, Source, Store, Stream, Term, Variable, Quad_Graph } from "rdf-js";
+  NamedNode, Quad, BaseQuad, Sink, Source, Store, Stream, Term, Variable, Quad_Graph } from ".";
 import { EventEmitter } from "events";
 
 function test_terms() {
@@ -19,9 +19,9 @@ function test_terms() {
 
     const namedNodeConstant: NamedNode<'http://example.org'> = <any> {};
     const constantIri: 'http://example.org' = namedNodeConstant.value;
-    // $ExpectError
+    // @ts-expect-error
     const otherConstantIri: 'http://not-example.org' = namedNodeConstant.value;
-    // $ExpectError
+    // @ts-expect-error
     const otherNamedNodeConstant: NamedNode<'http://not-example.org'> = namedNodeConstant;
     const regularNamedNode: NamedNode = namedNodeConstant;
 
@@ -70,9 +70,9 @@ function test_datafactory() {
 
     const namedNode: NamedNode = dataFactory.namedNode('http://example.org');
     const constantValue: 'http://example.org' = dataFactory.namedNode('http://example.org').value;
-    // $ExpectError
+    // @ts-expect-error
     const otherConstantValue: 'http://not-example.org' = dataFactory.namedNode('http://example.org').value;
-    // $ExpectError
+    // @ts-expect-error
     const otherConstantNamedNode: NamedNode<'http://not-example.org'> = dataFactory.namedNode('http://example.org');
 
     const blankNode1: BlankNode = dataFactory.blankNode('b1');

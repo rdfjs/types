@@ -7,6 +7,16 @@
     "url": "https://github.com/rdfjs/representation-task-force",
     "email": "public-rdfjs@w3.org"
   },
+  "scripts": {
+    "lint": "exit 0",
+    "test": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@types/node": "*"
+  },
+  "devDependencies": {
+    "typescript": "^4.0.3"
+  },
   "maintainers": [{
     "name": "Ruben Taelman",
     "url": "https://github.com/rubensworks"

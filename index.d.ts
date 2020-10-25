@@ -6,11 +6,6 @@
 // Definitions: https://github.com/DefinitelyTyped/DefinitelyTyped
 // TypeScript Version: 2.3
 
-/// <reference types="node" />
-
-import * as stream from "stream";
-import { EventEmitter } from "events";
-
 export * from './data-model';
 export * from './stream';
 export * from './dataset';

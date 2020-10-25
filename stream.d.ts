@@ -1,6 +1,11 @@
 /* Stream Interfaces */
 /* https://rdf.js.org/stream-spec/ */
 
+import * as stream from "stream";
+import { EventEmitter } from "events";
+
+import { BaseQuad, Quad, Term } from './data-model';
+
 /**
  * A quad stream.
  * This stream is only readable, not writable.
