@@ -1,0 +1,30 @@
+{
+  "name": "rdf-js",
+  "version": "4.0.1",
+  "types": "index.d.ts",
+  "author": {
+    "name": "RDF/JS Representation Task Force",
+    "url": "https://github.com/rdfjs/representation-task-force",
+    "email": "public-rdfjs@w3.org"
+  },
+  "maintainers": [{
+    "name": "Ruben Taelman",
+    "url": "https://github.com/rubensworks"
+  }, {
+    "name": "Laurens Rietveld",
+    "url": "https://github.com/LaurensRietveld"
+  }, {
+    "name": "Tomasz Pluskiewicz",
+    "url": "https://github.com/tpluscode"
+  }],
+  "bugs": {
+    "email": "public-rdfjs@w3.org",
+    "url": "https://github.com/rdfjs/types/issues"
+  },
+  "homepage": "http://rdf.js.org/",
+  "keywords": ["rdf", "rdf/js", "rdfjs", "typescript"],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/rdfjs/types"
+  }
+}
