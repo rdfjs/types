@@ -380,7 +380,7 @@ async function test_dataset_covariance(): Promise<Dataset> {
 }
 
 class DatasetCoreExt implements DatasetCore {
-    size: number;
+    size!: number;
 
     add(): this {
         throw new Error("Method not implemented.");
