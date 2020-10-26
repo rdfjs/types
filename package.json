@@ -17,16 +17,6 @@
   "devDependencies": {
     "typescript": "^4.0.3"
   },
-  "maintainers": [{
-    "name": "Ruben Taelman",
-    "url": "https://github.com/rubensworks"
-  }, {
-    "name": "Laurens Rietveld",
-    "url": "https://github.com/LaurensRietveld"
-  }, {
-    "name": "Tomasz Pluskiewicz",
-    "url": "https://github.com/tpluscode"
-  }],
   "bugs": {
     "email": "public-rdfjs@w3.org",
     "url": "https://github.com/rdfjs/types/issues"
