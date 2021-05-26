@@ -132,7 +132,7 @@ export interface Dataset<OutQuad extends BaseQuad = Quad, InQuad extends BaseQua
     /**
      * Returns a new dataset containing alls quads from the current dataset that are also included in the given dataset.
      */
-    intersection(other: Dataset<InQuad>): this;
+    intersection(other: Dataset<InQuad>): Dataset<OutQuad, InQuad>;
 
     /**
      * Returns a new dataset containing all quads returned by applying `iteratee` to each quad in the current dataset.
