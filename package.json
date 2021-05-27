@@ -1,6 +1,6 @@
 {
   "name": "@rdfjs/types",
-  "version": "2.0.0",
+  "version": "0.0.0",
   "types": "index.d.ts",
   "author": {
     "name": "RDF/JS Representation Task Force",
@@ -9,12 +9,14 @@
   },
   "scripts": {
     "lint": "eslint . --ext .ts",
-    "test": "tsc --noEmit"
+    "test": "tsc --noEmit",
+    "release": "changeset publish"
   },
   "dependencies": {
     "@types/node": "*"
   },
   "devDependencies": {
+    "@changesets/cli": "^2.16.0",
     "@typescript-eslint/eslint-plugin": "^4.5.0",
     "@typescript-eslint/parser": "^4.5.0",
     "eslint": "^7.12.0",
