@@ -1,8 +1,22 @@
 # @rdf-js/types
 
-Authoritative TypeScript typings for all RDFJS specifications
+Authoritative TypeScript typings for all RDF/JS specifications
 
 The types should match the RDF/JS specifications ([Data Model](https://rdf.js.org/data-model-spec/), [Dataset](https://rdf.js.org/dataset-spec/) and [Stream](https://rdf.js.org/stream-spec/)). However, because they also take advantage of TypecScript-specific syntax features, some differences are inevitable. If something does not add up, please open an [issue](#contributing).
+
+## Usage
+
+Installed as usual using your favourite package manager.
+
+```
+yarn add @types/rdf-js
+```
+
+This package does not provide code, only interafces for the RDF/JS specifications. Import them to strong-type your RDF/JS code.
+
+```typescript
+import type { NamedNode, DatasetCore, Stream } from '@rdfjs/types'
+```
 
 ## Contributing
 
