@@ -1,4 +1,4 @@
-# @rdf-js/types
+# RDF/JS Types
 
 Authoritative TypeScript typings for all RDF/JS specifications
 
