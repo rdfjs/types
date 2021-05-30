@@ -18,7 +18,7 @@ This package does not provide code, only interafces for the RDF/JS specification
 import type { NamedNode, DatasetCore, Stream } from '@rdfjs/types'
 ```
 
-Or import separaterly from type modules corresponding the specifications.
+Or import separately from type modules corresponding the specifications.
 
 ```typescript
 import type { NamedNode } from '@rdfjs/types/data-model'
