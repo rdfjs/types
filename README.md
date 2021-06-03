@@ -36,4 +36,4 @@ You may also create a [changeset](https://github.com/atlassian/changesets) file 
 
 This package replaces typings previously managed in the [DefinitelyTyped repository](https://npm.im/@types/rdf-js). 
 
-The old package wil be deprecated but continue to work for backwards compatibility but library maintainers are encouraged to use `@rdf-js/types` instead.
+The old package wil be deprecated but continue to work for backwards compatibility but library maintainers are encouraged to use `@rdfjs/types` instead.
