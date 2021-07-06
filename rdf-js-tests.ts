@@ -239,7 +239,6 @@ function test_dataset() {
     const quadMapIteratee: (quad: Quad, dataset: Dataset) => Quad = <any> {};
     const quadReduceToStringIteratee: (reduced: string, quad: Quad) => string = <any> {};
     const quadReduceToArrayIteratee: (arr: boolean[], quad: Quad, dataset: Dataset) => boolean[] = <any> {};
-    const quadForEachIteratee: (quad: Quad, dataset: Dataset) => void = <any> {};
 
     const datasetFactory1: DatasetFactory = <any> {};
     const datasetFactory2: DatasetFactory<QuadBnode> = <any> {};
@@ -267,7 +266,9 @@ function test_dataset() {
     const dataset2Equals: boolean = dataset2.equals(dataset1);
     const dataset2Every: boolean = dataset2.every(quadFilterIteratee);
     const dataset2Filter: Dataset = dataset2.filter(quadFilterIteratee);
-    dataset2.forEach(quadForEachIteratee);
+    dataset2.forEach((quad: Quad, dataset: Dataset) => {
+        return
+    });
     const dataset2Has: boolean = dataset2.has(quad);
     const dataset2Import: Promise<Dataset> = dataset2.import(stream1);
     const dataset2Intersection: Dataset = dataset2.intersection(dataset1);
@@ -304,7 +305,9 @@ function test_dataset() {
     const dataset4Equals: boolean = dataset4.equals(dataset3);
     const dataset4Every: boolean = dataset4.every(quadFilterIteratee);
     const dataset4Filter: Dataset<QuadBnode> = dataset4.filter(quadFilterIteratee);
-    dataset4.forEach(quadForEachIteratee);
+    dataset4.forEach((quad: QuadBnode, dataset: Dataset<QuadBnode>) => {
+        return
+    });
     const dataset4Has: boolean = dataset4.has(quadBnode);
     const dataset4Import: Promise<Dataset<QuadBnode>> = dataset4.import(stream2);
     const dataset4Intersection: Dataset<QuadBnode> = dataset4.intersection(dataset3);

@@ -120,7 +120,7 @@ export interface Dataset<OutQuad extends BaseQuad = Quad, InQuad extends BaseQua
      *
      * This method is aligned with `Array.prototype.forEach()` in ECMAScript-262.
      */
-    forEach(iteratee: QuadRunIteratee<OutQuad>['run']): void;
+    forEach(callback: (quad: OutQuad, dataset: this) => void): void;
 
     /**
      * Imports all quads from the given stream into the dataset.
@@ -224,11 +224,4 @@ export interface QuadReduceIteratee<A = any, Q extends BaseQuad = Quad> {
      * A callable function that can be executed on an accumulator and quad and returns a new accumulator.
      */
     run(accumulator: A, quad: Q, dataset: Dataset<Q>): A;
-}
-
-export interface QuadRunIteratee<Q extends BaseQuad = Quad> {
-    /**
-     * A callable function that can be executed on a quad.
-     */
-    run(quad: Q, dataset: Dataset<Q>): void;
 }
