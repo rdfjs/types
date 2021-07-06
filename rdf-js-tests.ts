@@ -237,8 +237,6 @@ function test_dataset() {
 
     const quadFilterIteratee: (quad: Quad, dataset: Dataset) => boolean = <any> {};
     const quadMapIteratee: (quad: Quad, dataset: Dataset) => Quad = <any> {};
-    const quadReduceToStringIteratee: (reduced: string, quad: Quad) => string = <any> {};
-    const quadReduceToArrayIteratee: (arr: boolean[], quad: Quad, dataset: Dataset) => boolean[] = <any> {};
 
     const datasetFactory1: DatasetFactory = <any> {};
     const datasetFactory2: DatasetFactory<QuadBnode> = <any> {};
@@ -278,9 +276,9 @@ function test_dataset() {
     const dataset2Match3: Dataset = dataset2.match(term, term);
     const dataset2Match4: Dataset = dataset2.match(term, term, term);
     const dataset2Match5: Dataset = dataset2.match(term, term, term, term);
-    const dataset2Reduce1: string = dataset2.reduce(quadReduceToStringIteratee);
-    const dataset2Reduce2: boolean[] = dataset2.reduce(quadReduceToArrayIteratee, []);
-    const dataset2Reduce3: string = dataset2.reduce(quadReduceToStringIteratee, '');
+    const dataset2Reduce1: string = dataset2.reduce((acc: string, quad: Quad, dataset: Dataset<Quad>) => acc);
+    const dataset2Reduce2: boolean[] = dataset2.reduce((acc: boolean[], quad: Quad, dataset: Dataset<Quad>) => acc, []);
+    const dataset2Reduce3: string = dataset2.reduce((acc: string, quad: Quad, dataset: Dataset<Quad>) => acc, '');
     const dataset2Some: boolean = dataset2.some(quadFilterIteratee);
     const dataset2ToArray: Quad[] = dataset2.toArray();
     const dataset2ToCanonical: string = dataset2.toCanonical();
@@ -317,11 +315,9 @@ function test_dataset() {
     const dataset4Match3: Dataset<QuadBnode> = dataset4.match(term, term);
     const dataset4Match4: Dataset<QuadBnode> = dataset4.match(term, term, term);
     const dataset4Match5: Dataset<QuadBnode> = dataset4.match(term, term, term, term);
-    const dataset4Reduce1: string = dataset4.reduce(quadReduceToStringIteratee);
-    const dataset4Reduce2: boolean[] = dataset4.reduce(quadReduceToArrayIteratee, []);
-    const dataset4Reduce3: string = dataset4.reduce(quadReduceToStringIteratee, '');
-    const dataset4Reduce4: string = dataset4.reduce(quadReduceToStringIteratee);
-    const dataset4Reduce5: string = dataset4.reduce(quadReduceToStringIteratee, '');
+    const dataset4Reduce1: string = dataset4.reduce((acc: string, quad: QuadBnode, dataset: Dataset<QuadBnode>) => acc);
+    const dataset4Reduce2: boolean[] = dataset4.reduce((acc: boolean[], quad: QuadBnode, dataset: Dataset<QuadBnode>) => acc, []);
+    const dataset4Reduce3: string = dataset4.reduce((acc: string, quad: QuadBnode, dataset: Dataset<QuadBnode>) => acc, '');
     const dataset4Some: boolean = dataset4.some(quadFilterIteratee);
     const dataset4ToArray: QuadBnode[] = dataset4.toArray();
     const dataset4ToCanonical: string = dataset4.toCanonical();
