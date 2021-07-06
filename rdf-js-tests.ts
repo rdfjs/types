@@ -235,8 +235,6 @@ function test_dataset() {
     const stream1: Stream = <any> {};
     const stream2: Stream<QuadBnode> = <any> {};
 
-    const quadFilterIteratee: (quad: Quad, dataset: Dataset) => boolean = <any> {};
-
     const datasetFactory1: DatasetFactory = <any> {};
     const datasetFactory2: DatasetFactory<QuadBnode> = <any> {};
 
@@ -261,8 +259,8 @@ function test_dataset() {
     const dataset2DeleteMatches5: Dataset = dataset2.deleteMatches(term, term, term, term);
     const dataset2Difference: Dataset = dataset2.difference(dataset1);
     const dataset2Equals: boolean = dataset2.equals(dataset1);
-    const dataset2Every: boolean = dataset2.every(quadFilterIteratee);
-    const dataset2Filter: Dataset = dataset2.filter(quadFilterIteratee);
+    const dataset2Every: boolean = dataset2.every((quad: Quad, dataset: Dataset) => true);
+    const dataset2Filter: Dataset = dataset2.filter((quad: Quad, dataset: Dataset) => true);
     dataset2.forEach((quad: Quad, dataset: Dataset) => {
         return
     });
@@ -278,7 +276,7 @@ function test_dataset() {
     const dataset2Reduce1: string = dataset2.reduce((acc: string, quad: Quad, dataset: Dataset<Quad>) => acc);
     const dataset2Reduce2: boolean[] = dataset2.reduce((acc: boolean[], quad: Quad, dataset: Dataset<Quad>) => acc, []);
     const dataset2Reduce3: string = dataset2.reduce((acc: string, quad: Quad, dataset: Dataset<Quad>) => acc, '');
-    const dataset2Some: boolean = dataset2.some(quadFilterIteratee);
+    const dataset2Some: boolean = dataset2.some((quad: Quad, dataset: Dataset) => true);
     const dataset2ToArray: Quad[] = dataset2.toArray();
     const dataset2ToCanonical: string = dataset2.toCanonical();
     const dataset2ToStream: Stream = dataset2.toStream();
@@ -300,8 +298,8 @@ function test_dataset() {
     const dataset4DeleteMatches5: Dataset<QuadBnode> = dataset4.deleteMatches(term, term, term, term);
     const dataset4Difference: Dataset<QuadBnode> = dataset4.difference(dataset3);
     const dataset4Equals: boolean = dataset4.equals(dataset3);
-    const dataset4Every: boolean = dataset4.every(quadFilterIteratee);
-    const dataset4Filter: Dataset<QuadBnode> = dataset4.filter(quadFilterIteratee);
+    const dataset4Every: boolean = dataset4.every((quad: QuadBnode, dataset: Dataset<QuadBnode>) => true);
+    const dataset4Filter: Dataset<QuadBnode> = dataset4.filter((quad: QuadBnode, dataset: Dataset<QuadBnode>) => true);
     dataset4.forEach((quad: QuadBnode, dataset: Dataset<QuadBnode>) => {
         return
     });
@@ -317,7 +315,7 @@ function test_dataset() {
     const dataset4Reduce1: string = dataset4.reduce((acc: string, quad: QuadBnode, dataset: Dataset<QuadBnode>) => acc);
     const dataset4Reduce2: boolean[] = dataset4.reduce((acc: boolean[], quad: QuadBnode, dataset: Dataset<QuadBnode>) => acc, []);
     const dataset4Reduce3: string = dataset4.reduce((acc: string, quad: QuadBnode, dataset: Dataset<QuadBnode>) => acc, '');
-    const dataset4Some: boolean = dataset4.some(quadFilterIteratee);
+    const dataset4Some: boolean = dataset4.some((quad: QuadBnode, dataset: Dataset<QuadBnode>) => true);
     const dataset4ToArray: QuadBnode[] = dataset4.toArray();
     const dataset4ToCanonical: string = dataset4.toCanonical();
     const dataset4ToStream: Stream<QuadBnode> = dataset4.toStream();
