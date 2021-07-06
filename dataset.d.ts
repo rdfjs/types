@@ -137,7 +137,7 @@ export interface Dataset<OutQuad extends BaseQuad = Quad, InQuad extends BaseQua
     /**
      * Returns a new dataset containing all quads returned by applying `iteratee` to each quad in the current dataset.
      */
-    map(iteratee: QuadMapIteratee<OutQuad>['map']): Dataset<OutQuad, InQuad>;
+    map(iteratee: (quad: OutQuad, dataset: Dataset<OutQuad>) => OutQuad): Dataset<OutQuad, InQuad>;
 
     /**
      * This method calls the `iteratee` on each `quad` of the `Dataset`. The first time the `iteratee` is called, the
@@ -208,13 +208,4 @@ export interface QuadFilterIteratee<Q extends BaseQuad = Quad> {
      * A callable function that returns `true` if the input quad passes the test this function implements.
      */
     test(quad: Q, dataset: Dataset<Q>): boolean;
-}
-
-export interface QuadMapIteratee<Q extends BaseQuad = Quad> {
-    /**
-     * A callable function that can be executed on a quad and returns a quad.
-     *
-     * The returned quad can be the given quad or a new one.
-     */
-    map(quad: Q, dataset: Dataset<Q>): Q;
 }
