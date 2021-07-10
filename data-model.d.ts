@@ -246,6 +246,32 @@ export interface BaseQuad {
 }
 
 /**
+ * @deprecated This interface allows for `Variable` term types in the quad components. Consider using either @see StarQuad or @see PlainQuad instead
+ */
+ export interface Quad extends BaseQuad {
+    /**
+     * The subject.
+     * @see Quad_Subject
+     */
+    subject: Quad_Subject;
+    /**
+     * The predicate.
+     * @see Quad_Predicate
+     */
+    predicate: Quad_Predicate;
+    /**
+     * The object.
+     * @see Quad_Object
+     */
+    object: Quad_Object;
+    /**
+     * The named graph.
+     * @see Quad_Graph
+     */
+    graph: Quad_Graph;
+}
+
+/**
  * An RDF quad, containing the subject, predicate, object and graph terms.
  */
 export interface StarQuad extends BaseQuad {
