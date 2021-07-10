@@ -1,10 +1,11 @@
 /* Dataset Interfaces */
 /* https://rdf.js.org/dataset-spec/ */
 
-import { Quad, BaseQuad, Term } from './data-model';
+import { BaseQuad, StarQuad, TermPattern } from './data-model';
 import { Stream } from './stream';
 
-export interface DatasetCore<OutQuad extends BaseQuad = Quad, InQuad extends BaseQuad = OutQuad> {
+
+export interface DatasetCore<OutQuad extends BaseQuad = StarQuad, InQuad extends BaseQuad = StarQuad> {
     /**
      * A non-negative integer that specifies the number of quads in the set.
      */
@@ -42,19 +43,19 @@ export interface DatasetCore<OutQuad extends BaseQuad = Quad, InQuad extends Bas
      * @param object    The optional exact object to match.
      * @param graph     The optional exact graph to match.
      */
-    match(subject?: Term | null, predicate?: Term | null, object?: Term | null, graph?: Term | null): DatasetCore<OutQuad, InQuad>;
+    match(subject?: InQuad['subject'] | TermPattern, predicate?: InQuad['predicate'] | TermPattern, object?: InQuad['object'] | TermPattern, graph?: InQuad['graph'] | TermPattern): DatasetCore<OutQuad, InQuad>;
 
     [Symbol.iterator](): Iterator<OutQuad>;
 }
 
-export interface DatasetCoreFactory<OutQuad extends BaseQuad = Quad, InQuad extends BaseQuad = OutQuad, D extends DatasetCore<OutQuad, InQuad> = DatasetCore<OutQuad, InQuad>> {
+export interface DatasetCoreFactory<OutQuad extends BaseQuad = StarQuad, InQuad extends BaseQuad = StarQuad, D extends DatasetCore<OutQuad, InQuad> = DatasetCore<OutQuad, InQuad>> {
     /**
      * Returns a new dataset and imports all quads, if given.
      */
     dataset(quads?: InQuad[]): D;
 }
 
-export interface Dataset<OutQuad extends BaseQuad = Quad, InQuad extends BaseQuad = OutQuad> extends DatasetCore<OutQuad, InQuad> {
+export interface Dataset<OutQuad extends BaseQuad = StarQuad, InQuad extends BaseQuad = StarQuad> extends DatasetCore<OutQuad, InQuad> {
     /**
      * Imports the quads into this dataset.
      *
@@ -82,7 +83,7 @@ export interface Dataset<OutQuad extends BaseQuad = Quad, InQuad extends BaseQua
      * @param object    The optional exact object to match.
      * @param graph     The optional exact graph to match.
      */
-    deleteMatches(subject?: Term, predicate?: Term, object?: Term, graph?: Term): this;
+    deleteMatches(subject?: InQuad['subject'] | TermPattern, predicate?: InQuad['predicate'] | TermPattern, object?: InQuad['object'] | TermPattern, graph?: InQuad['graph'] | TermPattern): this;
 
     /**
      * Returns a new dataset that contains all quads from the current dataset, not included in the given dataset.
@@ -191,26 +192,24 @@ export interface Dataset<OutQuad extends BaseQuad = Quad, InQuad extends BaseQua
      * Returns a new `Dataset` that is a concatenation of this dataset and the quads given as an argument.
      */
     union(quads: Dataset<InQuad>): Dataset<OutQuad, InQuad>;
-
-    match(subject?: Term | null, predicate?: Term | null, object?: Term | null, graph?: Term | null): Dataset<OutQuad, InQuad>;
 }
 
-export interface DatasetFactory<OutQuad extends BaseQuad = Quad, InQuad extends BaseQuad = OutQuad, D extends Dataset<OutQuad, InQuad> = Dataset<OutQuad, InQuad>>
+export interface DatasetFactory<OutQuad extends BaseQuad = StarQuad, InQuad extends BaseQuad = StarQuad, D extends Dataset<OutQuad, InQuad> = Dataset<OutQuad, InQuad>>
     extends DatasetCoreFactory<OutQuad, InQuad, D> {
     /**
      * Returns a new dataset and imports all quads, if given.
      */
-    dataset(quads?: Dataset<InQuad>|InQuad[]): D;
+    dataset(quads?: Dataset<InQuad> | InQuad[]): D;
 }
 
-export interface QuadFilterIteratee<Q extends BaseQuad = Quad> {
+export interface QuadFilterIteratee<Q extends BaseQuad = PlainQuad> {
     /**
      * A callable function that returns `true` if the input quad passes the test this function implements.
      */
     test(quad: Q, dataset: Dataset<Q>): boolean;
 }
 
-export interface QuadMapIteratee<Q extends BaseQuad = Quad> {
+export interface QuadMapIteratee<Q extends BaseQuad = PlainQuad> {
     /**
      * A callable function that can be executed on a quad and returns a quad.
      *
@@ -219,14 +218,14 @@ export interface QuadMapIteratee<Q extends BaseQuad = Quad> {
     map(quad: Q, dataset: Dataset<Q>): Q;
 }
 
-export interface QuadReduceIteratee<A = any, Q extends BaseQuad = Quad> {
+export interface QuadReduceIteratee<A = any, Q extends BaseQuad = PlainQuad> {
     /**
      * A callable function that can be executed on an accumulator and quad and returns a new accumulator.
      */
     run(accumulator: A, quad: Q, dataset: Dataset<Q>): A;
 }
 
-export interface QuadRunIteratee<Q extends BaseQuad = Quad> {
+export interface QuadRunIteratee<Q extends BaseQuad = PlainQuad> {
     /**
      * A callable function that can be executed on a quad.
      */
