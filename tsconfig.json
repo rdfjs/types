@@ -15,6 +15,6 @@
     },
     "files": [
         "index.d.ts",
-        "rdf-js-tests.ts"
+        "rdfjs-tests.ts"
     ]
 }
