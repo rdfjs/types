@@ -1,5 +1,11 @@
 # @rdfjs/types
 
+## 1.1.0
+
+### Minor Changes
+
+- 95f1e31: Dataset: Use correct type of `dataset` in methods with callbacks
+
 ## 1.0.1
 
 ### Patch Changes
