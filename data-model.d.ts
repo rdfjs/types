@@ -10,7 +10,7 @@
  * @see DefaultGraph
  * @see PlainQuad
  */
-export type Term = NamedNode | BlankNode | Literal | Variable | DefaultGraph | StarQuad;
+export type Term = NamedNode | BlankNode | Literal | Variable | DefaultGraph | BaseQuad;
 
 /**
  * Contains an IRI.

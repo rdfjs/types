@@ -192,6 +192,8 @@ export interface Dataset<OutQuad extends BaseQuad = StarQuad, InQuad extends Bas
      * Returns a new `Dataset` that is a concatenation of this dataset and the quads given as an argument.
      */
     union(quads: Dataset<InQuad>): Dataset<OutQuad, InQuad>;
+
+    match(subject?: InQuad['subject'] | TermPattern, predicate?: InQuad['predicate'] | TermPattern, object?: InQuad['object'] | TermPattern, graph?: InQuad['graph'] | TermPattern): Dataset<OutQuad, InQuad>;
 }
 
 export interface DatasetFactory<OutQuad extends BaseQuad = StarQuad, InQuad extends BaseQuad = StarQuad, D extends Dataset<OutQuad, InQuad> = Dataset<OutQuad, InQuad>>

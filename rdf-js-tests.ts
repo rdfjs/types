@@ -1,5 +1,5 @@
 import { BlankNode, DataFactory, Dataset, DatasetCore, DatasetCoreFactory, DatasetFactory, DefaultGraph, Literal,
-  NamedNode, Quad, BaseQuad, Sink, Source, Store, Stream, Term, Variable, Quad_Graph } from ".";
+  NamedNode, Quad, BaseQuad, StarQuad, PlainQuad, StarRole, PlainRole, Sink, Source, Store, Stream, Term, Variable, Quad_Graph } from ".";
 import { EventEmitter } from "events";
 
 function test_terms() {
@@ -57,12 +57,30 @@ function test_terms() {
 }
 
 function test_quads() {
-    const quad: Quad = <any> {};
-    const s1: Term = quad.subject;
-    const p1: Term = quad.predicate;
-    const o1: Term = quad.object;
-    const g1: Term = quad.graph;
-    quad.equals(quad);
+    {
+        const quad: BaseQuad = <any> {};
+        const s1: Term = quad.subject;
+        const p1: Term = quad.predicate;
+        const o1: Term = quad.object;
+        const g1: Term = quad.graph;
+        quad.equals(quad);
+    }
+    {
+        const quad: StarQuad = <any> {};
+        const s1: StarRole.Subject = quad.subject;
+        const p1: StarRole.Predicate = quad.predicate;
+        const o1: StarRole.Object = quad.object;
+        const g1: StarRole.Graph = quad.graph;
+        quad.equals(quad);
+    }
+    {
+        const quad: PlainQuad = <any> {};
+        const s1: PlainRole.Subject = quad.subject;
+        const p1: PlainRole.Predicate = quad.predicate;
+        const o1: PlainRole.Object = quad.object;
+        const g1: PlainRole.Graph = quad.graph;
+        quad.equals(quad);
+    }
 }
 
 function test_datafactory() {
@@ -92,21 +110,21 @@ function test_datafactory() {
       graph: Term;
     }
 
-    const quadBnodeFactory: DataFactory<QuadBnode> = <any> {};
+    const quadBnodeFactory: DataFactory<QuadBnode, QuadBnode> = <any> {};
     const quad = quadBnodeFactory.quad(literal1, blankNode1, term, term);
     const hasBnode = quad.predicate.termType === "BlankNode";
 }
 
 function test_datafactory_star() {
-    const dataFactory: DataFactory = <any> {};
+    const dataFactory: DataFactory<StarQuad> = <any> {};
 
     // Compose the triple "<<ex:bob ex:age 23>> ex:certainty 0.9."
-    const quadBobAge: Quad = dataFactory.quad(
+    const quadBobAge: StarQuad = dataFactory.quad(
         dataFactory.namedNode('ex:bob'),
         dataFactory.namedNode('ex:age'),
         dataFactory.literal('23'),
     );
-    const quadBobAgeCertainty: Quad = dataFactory.quad(
+    const quadBobAgeCertainty: StarQuad = dataFactory.quad(
         quadBobAge,
         dataFactory.namedNode('ex:certainty'),
         dataFactory.literal('0.9'),
@@ -114,7 +132,7 @@ function test_datafactory_star() {
 
     // Decompose the triple
     if (quadBobAgeCertainty.subject.termType === 'Quad') {
-        const quadBobAge2: Quad = quadBobAgeCertainty.subject;
+        const quadBobAge2: StarQuad = quadBobAgeCertainty.subject;
 
         const equalToSelf: boolean = quadBobAge2.equals(quadBobAge);
         const notEqualToOtherType: boolean = quadBobAge2.equals(dataFactory.namedNode('ex:something:else'));
@@ -122,10 +140,10 @@ function test_datafactory_star() {
 }
 
 function test_datafactory_star_basequad() {
-    const dataFactory: DataFactory<BaseQuad> = <any> {};
+    const dataFactory: DataFactory<StarQuad, BaseQuad> = <any> {};
 
     // Compose the triple "<<ex:bob ex:age 23>> ex:certainty 0.9."
-    const quadBobAge: BaseQuad = dataFactory.quad(
+    const quadBobAge: StarQuad = dataFactory.quad(
         dataFactory.namedNode('ex:bob'),
         dataFactory.namedNode('ex:age'),
         dataFactory.literal('23'),
@@ -146,19 +164,50 @@ function test_datafactory_star_basequad() {
 }
 
 function test_stream() {
-    const stream: Stream = <any> {};
-    const quad: Quad | null = stream.read();
+    const stream: Stream<BaseQuad> = <any> {};
+    const quad: BaseQuad | null = stream.read();
 
     const term: Term = <any> {};
+    const source: Source<BaseQuad, BaseQuad> = <any> {};
+    const matchStream1: Stream<BaseQuad> = source.match();
+    const matchStream2: Stream<BaseQuad> = source.match(term);
+    const matchStream4: Stream<BaseQuad> = source.match(term, term);
+    const matchStream6: Stream<BaseQuad> = source.match(term, term, term);
+    const matchStream8: Stream<BaseQuad> = source.match(term, term, term, term);
+
+    const sink: Sink<Stream<BaseQuad>, EventEmitter> = <any> {};
+    const graph: StarRole.Graph = <any> {};
+    const eventEmitter1: EventEmitter = sink.import(stream);
+
+    const store: Store<BaseQuad, BaseQuad> = <any> {};
+    const storeSource: Source<BaseQuad> = store;
+    const storeSink: Sink<Stream<BaseQuad>, EventEmitter> = store;
+    const eventEmitter2: EventEmitter = store.remove(stream);
+    const eventEmitter3: EventEmitter = store.removeMatches();
+    const eventEmitter4: EventEmitter = store.removeMatches(term);
+    const eventEmitter6: EventEmitter = store.removeMatches(term, term);
+    const eventEmitter8: EventEmitter = store.removeMatches(term, term, term);
+    const eventEmitter10: EventEmitter = store.removeMatches(term, term, term, term);
+    const eventEmitter12: EventEmitter = store.deleteGraph(graph);
+    const eventEmitter13: EventEmitter = store.deleteGraph('http://example.org');
+}
+
+function test_stream_components() {
+    const stream: Stream = <any> {};
+    const quad: StarQuad | null = stream.read();
+
+    const subject: StarRole.Subject = <any> {};
+    const predicate: StarRole.Predicate = <any> {};
+    const object: StarRole.Object = <any> {};
+    const graph: StarRole.Graph = <any> {};
     const source: Source = <any> {};
     const matchStream1: Stream = source.match();
-    const matchStream2: Stream = source.match(term);
-    const matchStream4: Stream = source.match(term, term);
-    const matchStream6: Stream = source.match(term, term, term);
-    const matchStream8: Stream = source.match(term, term, term, term);
+    const matchStream2: Stream = source.match(subject);
+    const matchStream4: Stream = source.match(subject, predicate);
+    const matchStream6: Stream = source.match(subject, predicate, object);
+    const matchStream8: Stream = source.match(subject, predicate, object, graph);
 
     const sink: Sink<Stream, EventEmitter> = <any> {};
-    const graph: Quad_Graph = <any> {};
     const eventEmitter1: EventEmitter = sink.import(stream);
 
     const store: Store = <any> {};
@@ -166,10 +215,10 @@ function test_stream() {
     const storeSink: Sink<Stream, EventEmitter> = store;
     const eventEmitter2: EventEmitter = store.remove(stream);
     const eventEmitter3: EventEmitter = store.removeMatches();
-    const eventEmitter4: EventEmitter = store.removeMatches(term);
-    const eventEmitter6: EventEmitter = store.removeMatches(term, term);
-    const eventEmitter8: EventEmitter = store.removeMatches(term, term, term);
-    const eventEmitter10: EventEmitter = store.removeMatches(term, term, term, term);
+    const eventEmitter4: EventEmitter = store.removeMatches(subject);
+    const eventEmitter6: EventEmitter = store.removeMatches(subject, predicate);
+    const eventEmitter8: EventEmitter = store.removeMatches(subject, predicate, object);
+    const eventEmitter10: EventEmitter = store.removeMatches(subject, predicate, object, graph);
     const eventEmitter12: EventEmitter = store.deleteGraph(graph);
     const eventEmitter13: EventEmitter = store.deleteGraph('http://example.org');
 }
@@ -182,31 +231,31 @@ function test_datasetcore() {
         graph: Term;
     }
 
-    const quad: Quad = <any> {};
+    const quad: BaseQuad = <any> {};
     const quadBnode: QuadBnode = <any> {};
     const term: Term = <any> {};
 
-    const datasetCoreFactory1: DatasetCoreFactory = <any> {};
-    const datasetCoreFactory2: DatasetCoreFactory<QuadBnode> = <any> {};
+    const datasetCoreFactory1: DatasetCoreFactory<BaseQuad, BaseQuad> = <any> {};
+    const datasetCoreFactory2: DatasetCoreFactory<QuadBnode, BaseQuad> = <any> {};
 
-    const dataset1: DatasetCore = datasetCoreFactory1.dataset();
-    const dataset2: DatasetCore = datasetCoreFactory1.dataset([quad, quad]);
+    const dataset1: DatasetCore<BaseQuad> = datasetCoreFactory1.dataset();
+    const dataset2: DatasetCore<BaseQuad, BaseQuad> = datasetCoreFactory1.dataset([quad, quad]);
     const dataset3: DatasetCore<QuadBnode, QuadBnode> = datasetCoreFactory2.dataset([quadBnode, quad]);
 
     const dataset2Size: number = dataset2.size;
-    const dataset2Add: DatasetCore = dataset2.add(quad);
-    const dataset2Delete: DatasetCore = dataset2.delete(quad);
+    const dataset2Add: DatasetCore<BaseQuad> = dataset2.add(quad);
+    const dataset2Delete: DatasetCore<BaseQuad> = dataset2.delete(quad);
     const dataset2Has: boolean = dataset2.has(quad);
-    const dataset2Match1: DatasetCore = dataset2.match();
-    const dataset2Match2: DatasetCore = dataset2.match(term);
-    const dataset2Match3: DatasetCore = dataset2.match(term, term);
-    const dataset2Match4: DatasetCore = dataset2.match(term, term, term);
-    const dataset2Match5: DatasetCore = dataset2.match(term, term, term, term);
-    const dataset2MatchWithNull1: DatasetCore = dataset2.match(term);
-    const dataset2MatchWithNull2: DatasetCore = dataset2.match(null, term);
-    const dataset2MatchWithNull3: DatasetCore = dataset2.match(term, null, term);
-    const dataset2MatchWithNull4: DatasetCore = dataset2.match(term, term, null, term);
-    const dataset2Iterable: Iterable<Quad> = dataset2;
+    const dataset2Match1: DatasetCore<BaseQuad> = dataset2.match();
+    const dataset2Match2: DatasetCore<BaseQuad> = dataset2.match(term);
+    const dataset2Match3: DatasetCore<BaseQuad> = dataset2.match(term, term);
+    const dataset2Match4: DatasetCore<BaseQuad> = dataset2.match(term, term, term);
+    const dataset2Match5: DatasetCore<BaseQuad> = dataset2.match(term, term, term, term);
+    const dataset2MatchWithNull1: DatasetCore<BaseQuad> = dataset2.match(term);
+    const dataset2MatchWithNull2: DatasetCore<BaseQuad> = dataset2.match(null, term);
+    const dataset2MatchWithNull3: DatasetCore<BaseQuad> = dataset2.match(term, null, term);
+    const dataset2MatchWithNull4: DatasetCore<BaseQuad> = dataset2.match(term, term, null, term);
+    const dataset2Iterable: Iterable<BaseQuad> = dataset2;
 
     const dataset3Size: number = dataset3.size;
     const dataset3Add: DatasetCore<QuadBnode> = dataset3.add(quadBnode);
@@ -228,62 +277,86 @@ function test_dataset() {
         graph: Term;
     }
 
-    const quad: Quad = <any> {};
+    interface QuadBnodeStar extends StarQuad {
+        subject: StarRole.Subject;
+        predicate: StarRole.Predicate;
+        object: StarRole.Object;
+        graph: StarRole.Graph;
+    }
+
+    const quad: BaseQuad = <any> {};
+    const quadStar: StarQuad = <any> {};
     const quadBnode: QuadBnode = <any> {};
+    const quadBnodeStar: QuadBnodeStar = <any> {};
     const term: Term = <any> {};
+    const subject: StarRole.Subject = <any> {};
+    const predicate: StarRole.Predicate = <any> {};
+    const object: StarRole.Object = <any> {};
+    const graph: StarRole.Graph = <any> {};
 
-    const stream1: Stream = <any> {};
+    const stream1: Stream<BaseQuad> = <any> {};
     const stream2: Stream<QuadBnode> = <any> {};
+    const stream3: Stream = <any> {};
+    const stream4: Stream<QuadBnodeStar> = <any> {};
 
-    const datasetFactory1: DatasetFactory = <any> {};
-    const datasetFactory2: DatasetFactory<QuadBnode> = <any> {};
+    const datasetFactory1: DatasetFactory<BaseQuad, BaseQuad> = <any> {};
+    const datasetFactory2: DatasetFactory<QuadBnode, BaseQuad> = <any> {};
+    const datasetFactory3: DatasetFactory = <any> {};
+    const datasetFactory4: DatasetFactory<QuadBnodeStar> = <any> {};
 
-    const dataset1: Dataset = datasetFactory1.dataset();
-    const dataset2: Dataset = datasetFactory1.dataset([quad, quad]);
-    const dataset3: Dataset<QuadBnode> = datasetFactory2.dataset();
-    const dataset4: Dataset<QuadBnode> = datasetFactory2.dataset([quadBnode, quad]);
+    const dataset1: Dataset<BaseQuad, BaseQuad> = datasetFactory1.dataset();
+    const dataset2: Dataset<BaseQuad, BaseQuad> = datasetFactory1.dataset([quad, quad]);
+    const dataset3: Dataset<QuadBnode, BaseQuad> = datasetFactory2.dataset();
+    const dataset4: Dataset<QuadBnode, BaseQuad> = datasetFactory2.dataset([quadBnode, quad]);
+    const dataset5: Dataset = datasetFactory3.dataset();
+    const dataset6: Dataset = datasetFactory3.dataset([quadStar, quadStar]);
+    const dataset7: Dataset<QuadBnodeStar> = datasetFactory4.dataset();
+    const dataset8: Dataset<QuadBnodeStar> = datasetFactory4.dataset([quadBnodeStar, quadStar]);
 
-    const datasetFactory1Core: DatasetCoreFactory = datasetFactory1;
-    const datasetFactory2Core: DatasetCoreFactory<QuadBnode> = datasetFactory2;
+    const datasetFactory1Core: DatasetCoreFactory<BaseQuad> = datasetFactory1;
+    const datasetFactory2Core: DatasetCoreFactory<QuadBnode, BaseQuad> = datasetFactory2;
+    const datasetFactory3Core: DatasetCoreFactory = datasetFactory3;
+    const datasetFactory4Core: DatasetCoreFactory<QuadBnode> = datasetFactory4;
 
     const dataset2Size: number = dataset2.size;
-    const dataset2Add: Dataset = dataset2.add(quad);
-    const dataset2AddAllDataset: Dataset = dataset2.addAll(dataset1);
-    const dataset2AddAllArray: Dataset = dataset2.addAll([quad]);
+    const dataset2Add: Dataset<BaseQuad> = dataset2.add(quad);
+    const dataset2AddAllDataset: Dataset<BaseQuad> = dataset2.addAll(dataset1);
+    const dataset2AddAllArray: Dataset<BaseQuad> = dataset2.addAll([quad]);
     const dataset2Contains: boolean = dataset2.contains(dataset1);
-    const dataset2Delete: Dataset = dataset2.delete(quad);
-    const dataset2DeleteMatches1: Dataset = dataset2.deleteMatches();
-    const dataset2DeleteMatches2: Dataset = dataset2.deleteMatches(term);
-    const dataset2DeleteMatches3: Dataset = dataset2.deleteMatches(term, term);
-    const dataset2DeleteMatches4: Dataset = dataset2.deleteMatches(term, term, term);
-    const dataset2DeleteMatches5: Dataset = dataset2.deleteMatches(term, term, term, term);
-    const dataset2Difference: Dataset = dataset2.difference(dataset1);
+    const dataset2Delete: Dataset<BaseQuad> = dataset2.delete(quad);
+    const dataset2DeleteMatches1: Dataset<BaseQuad> = dataset2.deleteMatches();
+    const dataset2DeleteMatches2: Dataset<BaseQuad> = dataset2.deleteMatches(term);
+    const dataset2DeleteMatches3: Dataset<BaseQuad> = dataset2.deleteMatches(term, term);
+    const dataset2DeleteMatches4: Dataset<BaseQuad> = dataset2.deleteMatches(term, term, term);
+    const dataset2DeleteMatches5: Dataset<BaseQuad> = dataset2.deleteMatches(term, term, term, term);
+    const dataset2Difference: Dataset<BaseQuad> = dataset2.difference(dataset1);
     const dataset2Equals: boolean = dataset2.equals(dataset1);
-    const dataset2Every: boolean = dataset2.every((quad: Quad, dataset: Dataset) => true);
-    const dataset2Filter: Dataset = dataset2.filter((quad: Quad, dataset: Dataset) => true);
-    dataset2.forEach((quad: Quad, dataset: Dataset) => {
+    const dataset2Every: boolean = dataset2.every((quad: BaseQuad, dataset: Dataset<BaseQuad>) => true);
+    const dataset2Filter: Dataset<BaseQuad> = dataset2.filter((quad: BaseQuad, dataset: Dataset<BaseQuad>) => true);
+    dataset2.forEach((quad: BaseQuad, dataset: Dataset<BaseQuad>) => {
         return
     });
     const dataset2Has: boolean = dataset2.has(quad);
-    const dataset2Import: Promise<Dataset> = dataset2.import(stream1);
-    const dataset2Intersection: Dataset = dataset2.intersection(dataset1);
-    const dataset2Map: Dataset = dataset2.map((quad: Quad, dataset: Dataset) => quad);
-    const dataset2Match1: Dataset = dataset2.match();
-    const dataset2Match2: Dataset = dataset2.match(term);
-    const dataset2Match3: Dataset = dataset2.match(term, term);
-    const dataset2Match4: Dataset = dataset2.match(term, term, term);
-    const dataset2Match5: Dataset = dataset2.match(term, term, term, term);
-    const dataset2Reduce1: string = dataset2.reduce((acc: string, quad: Quad, dataset: Dataset<Quad>) => acc);
-    const dataset2Reduce2: boolean[] = dataset2.reduce((acc: boolean[], quad: Quad, dataset: Dataset<Quad>) => acc, []);
-    const dataset2Reduce3: string = dataset2.reduce((acc: string, quad: Quad, dataset: Dataset<Quad>) => acc, '');
-    const dataset2Some: boolean = dataset2.some((quad: Quad, dataset: Dataset) => true);
-    const dataset2ToArray: Quad[] = dataset2.toArray();
+    const dataset2Import: Promise<Dataset<BaseQuad>> = dataset2.import(stream1);
+    const dataset2Intersection: Dataset<BaseQuad> = dataset2.intersection(dataset1);
+    const dataset2Map: Dataset<BaseQuad> = dataset2.map((quad: BaseQuad, dataset: Dataset<BaseQuad>) => quad);
+    const dataset2Match1: Dataset<BaseQuad, BaseQuad> = dataset2.match();
+    const dataset2Match2: Dataset<BaseQuad, BaseQuad> = dataset2.match(term);
+    const dataset2Match3: Dataset<BaseQuad, BaseQuad> = dataset2.match(term, term);
+    const dataset2Match4: Dataset<BaseQuad, BaseQuad> = dataset2.match(term, term, term);
+    const dataset2Match5: Dataset<BaseQuad, BaseQuad> = dataset2.match(term, term, term, term);
+    const dataset2Reduce1: string = dataset2.reduce((acc: string, quad: BaseQuad, dataset: Dataset<BaseQuad>) => acc);
+    const dataset2Reduce2: boolean[] = dataset2.reduce((acc: boolean[], quad: BaseQuad, dataset: Dataset<BaseQuad>) => acc, []);
+    const dataset2Reduce3: string = dataset2.reduce((acc: string, quad: BaseQuad, dataset: Dataset<BaseQuad>) => acc, '');
+    const dataset2Some: boolean = dataset2.some((quad: BaseQuad, dataset: Dataset<BaseQuad>) => true);
+    const dataset2ToArray: BaseQuad[] = dataset2.toArray();
     const dataset2ToCanonical: string = dataset2.toCanonical();
-    const dataset2ToStream: Stream = dataset2.toStream();
+    const dataset2ToStream: Stream<BaseQuad> = dataset2.toStream();
     const dataset2ToString: string = dataset2.toString();
-    const dataset2Union: Dataset = dataset2.union(dataset1);
-    const dataset2Iterable: Iterable<Quad> = dataset2;
-    const dataset2Core: DatasetCore = dataset2;
+    const dataset2Union: Dataset<BaseQuad> = dataset2.union(dataset1);
+    const dataset2Iterable: Iterable<BaseQuad> = dataset2;
+    const dataset2Core: DatasetCore<BaseQuad> = dataset2;
+
 
     const dataset4Size: number = dataset4.size;
     const dataset4Add: Dataset<QuadBnode> = dataset4.add(quadBnode);
@@ -323,6 +396,86 @@ function test_dataset() {
     const dataset4Union: Dataset<QuadBnode> = dataset4.union(dataset3);
     const dataset4Iterable: Iterable<QuadBnode> = dataset4;
     const dataset4Core: DatasetCore<QuadBnode> = dataset4;
+
+    const dataset6Size: number = dataset6.size;
+    const dataset6Add: Dataset = dataset6.add(quadStar);
+    const dataset6AddAllDataset: Dataset = dataset6.addAll(dataset5);
+    const dataset6AddAllArray: Dataset = dataset6.addAll([quadStar]);
+    const dataset6Contains: boolean = dataset6.contains(dataset5);
+    const dataset6Delete: Dataset = dataset6.delete(quadStar);
+    const dataset6DeleteMatches1: Dataset = dataset6.deleteMatches();
+    const dataset6DeleteMatches2: Dataset = dataset6.deleteMatches(subject);
+    const dataset6DeleteMatches3: Dataset = dataset6.deleteMatches(subject, predicate);
+    const dataset6DeleteMatches4: Dataset = dataset6.deleteMatches(subject, predicate, object);
+    const dataset6DeleteMatches5: Dataset = dataset6.deleteMatches(subject, predicate, object, graph);
+    const dataset6Difference: Dataset = dataset6.difference(dataset5);
+    const dataset6Equals: boolean = dataset6.equals(dataset5);
+    const dataset6Every: boolean = dataset6.every((quad: StarQuad, dataset: Dataset) => true);
+    const dataset6Filter: Dataset = dataset6.filter((quad: StarQuad, dataset: Dataset) => true);
+    dataset6.forEach((quad: StarQuad, dataset: Dataset) => {
+        return
+    });
+    const dataset6Has: boolean = dataset6.has(quadStar);
+    const dataset6Import: Promise<Dataset> = dataset6.import(stream3);
+    const dataset6Intersection: Dataset = dataset6.intersection(dataset5);
+    const dataset6Map: Dataset = dataset6.map((quad: StarQuad, dataset: Dataset) => quad);
+    const dataset6Match1: Dataset = dataset6.match();
+    const dataset6Match2: Dataset = dataset6.match(subject);
+    const dataset6Match3: Dataset = dataset6.match(subject, predicate);
+    const dataset6Match4: Dataset = dataset6.match(subject, predicate, object);
+    const dataset6Match5: Dataset = dataset6.match(subject, predicate, object, graph);
+    const dataset6Reduce1: string = dataset6.reduce((acc: string, quad: StarQuad, dataset: Dataset) => acc);
+    const dataset6Reduce2: boolean[] = dataset6.reduce((acc: boolean[], quad: StarQuad, dataset: Dataset) => acc, []);
+    const dataset6Reduce3: string = dataset6.reduce((acc: string, quad: StarQuad, dataset: Dataset) => acc, '');
+    const dataset6Some: boolean = dataset6.some((quad: StarQuad, dataset: Dataset) => true);
+    const dataset6ToArray: StarQuad[] = dataset6.toArray();
+    const dataset6ToCanonical: string = dataset6.toCanonical();
+    const dataset6ToStream: Stream = dataset6.toStream();
+    const dataset6ToString: string = dataset6.toString();
+    const dataset6Union: Dataset = dataset6.union(dataset5);
+    const dataset6Iterable: Iterable<StarQuad> = dataset6;
+    const dataset6Core: DatasetCore = dataset6;
+
+
+    const dataset8Size: number = dataset8.size;
+    const dataset8Add: Dataset<QuadBnodeStar> = dataset8.add(quadBnodeStar);
+    const dataset8AddAllDataset: Dataset<QuadBnodeStar> = dataset8.addAll(dataset7);
+    const dataset8AddAllArray: Dataset<QuadBnodeStar> = dataset8.addAll([quadBnodeStar]);
+    const dataset8Contains: boolean = dataset8.contains(dataset7);
+    const dataset8Delete: Dataset<QuadBnodeStar> = dataset8.delete(quadBnodeStar);
+    const dataset8DeleteMatches1: Dataset<QuadBnodeStar> = dataset8.deleteMatches();
+    const dataset8DeleteMatches2: Dataset<QuadBnodeStar> = dataset8.deleteMatches(subject);
+    const dataset8DeleteMatches3: Dataset<QuadBnodeStar> = dataset8.deleteMatches(subject, predicate);
+    const dataset8DeleteMatches4: Dataset<QuadBnodeStar> = dataset8.deleteMatches(subject, predicate, object);
+    const dataset8DeleteMatches5: Dataset<QuadBnodeStar> = dataset8.deleteMatches(subject, predicate, object, graph);
+    const dataset8Difference: Dataset<QuadBnodeStar> = dataset8.difference(dataset7);
+    const dataset8Equals: boolean = dataset8.equals(dataset7);
+    const dataset8Every: boolean = dataset8.every((quad: QuadBnodeStar, dataset: Dataset<QuadBnodeStar>) => true);
+    const dataset8Filter: Dataset<QuadBnodeStar> = dataset8.filter((quad: QuadBnodeStar, dataset: Dataset<QuadBnodeStar>) => true);
+    dataset8.forEach((quad: QuadBnodeStar, dataset: Dataset<QuadBnodeStar>) => {
+        return
+    });
+    const dataset8Has: boolean = dataset8.has(quadBnodeStar);
+    const dataset8Import: Promise<Dataset<QuadBnodeStar>> = dataset8.import(stream4);
+    const dataset8Intersection: Dataset<QuadBnodeStar> = dataset8.intersection(dataset7);
+    const dataset8Map: Dataset<QuadBnodeStar> = dataset8.map((quad: QuadBnodeStar, dataset: Dataset<QuadBnodeStar>) => quad);
+    const dataset8Match1: Dataset<QuadBnodeStar> = dataset8.match();
+    const dataset8Match2: Dataset<QuadBnodeStar> = dataset8.match(subject);
+    const dataset8Match3: Dataset<QuadBnodeStar> = dataset8.match(subject, predicate);
+    const dataset8Match4: Dataset<QuadBnodeStar> = dataset8.match(subject, predicate, object);
+    const dataset8Match5: Dataset<QuadBnodeStar> = dataset8.match(subject, predicate, object, graph);
+    const dataset8Reduce1: string = dataset8.reduce((acc: string, quad: QuadBnodeStar, dataset: Dataset<QuadBnodeStar>) => acc);
+    const dataset8Reduce2: boolean[] = dataset8.reduce((acc: boolean[], quad: QuadBnodeStar, dataset: Dataset<QuadBnodeStar>) => acc, []);
+    const dataset8Reduce3: string = dataset8.reduce((acc: string, quad: QuadBnodeStar, dataset: Dataset<QuadBnodeStar>) => acc, '');
+    const dataset8Some: boolean = dataset8.some((quad: QuadBnodeStar, dataset: Dataset<QuadBnodeStar>) => true);
+    const dataset8ToArray: QuadBnodeStar[] = dataset8.toArray();
+    const dataset8ToCanonical: string = dataset8.toCanonical();
+    const dataset8ToStream: Stream<QuadBnodeStar> = dataset8.toStream();
+    const dataset8ToString: string = dataset8.toString();
+    const dataset8Union: Dataset<QuadBnodeStar> = dataset8.union(dataset7);
+    const dataset8Iterable: Iterable<QuadBnodeStar> = dataset8;
+    const dataset8Core: DatasetCore<QuadBnodeStar> = dataset8;
+
 }
 
 function test_datasetCoreFactory_covariance() {
@@ -342,14 +495,14 @@ function test_datasetFactory_covariance() {
 }
 
 async function test_dataset_covariance(): Promise<Dataset> {
-    const quad: Quad = <any> {};
+    const quad: StarQuad = <any> {};
     const dataset: Dataset = <any> {};
 
     // rdf-ext-like quad
-    interface QuadExt extends Quad {
+    interface QuadExt extends StarQuad {
         toCanonical(): string;
     }
-    let datasetExt: Dataset<QuadExt, Quad> = <any> {};
+    let datasetExt: Dataset<QuadExt, StarQuad> = <any> {};
 
     // stream coming from a generic parser
     const stream: Stream = <any> {};
@@ -382,12 +535,12 @@ class DatasetCoreExt implements DatasetCore {
         throw new Error("Method not implemented.");
     }
 
-    match(): DatasetCore<Quad, Quad> {
+    match(): DatasetCore {
         const newInstance: DatasetCoreExt = <any> {};
         return newInstance;
     }
 
-    [Symbol.iterator](): Iterator<Quad> {
+    [Symbol.iterator](): Iterator<StarQuad> {
         throw new Error("Method not implemented.");
     }
 }
@@ -405,7 +558,7 @@ class DatasetExt extends DatasetCoreExt implements Dataset {
         throw new Error("Method not implemented.");
     }
 
-    difference(): Dataset<Quad, Quad> {
+    difference(): Dataset {
         const newInstance: DatasetExt = <any> {};
         return newInstance;
     }
@@ -418,7 +571,7 @@ class DatasetExt extends DatasetCoreExt implements Dataset {
         throw new Error("Method not implemented.");
     }
 
-    filter(): Dataset<Quad, Quad> {
+    filter(): Dataset {
         const newInstance: DatasetExt = <any> {};
         return newInstance;
     }
@@ -435,12 +588,12 @@ class DatasetExt extends DatasetCoreExt implements Dataset {
         throw new Error("Method not implemented.");
     }
 
-    map(): Dataset<Quad, Quad> {
+    map(): Dataset {
         const newInstance: DatasetExt = <any> {};
         return newInstance;
     }
 
-    match(): Dataset<Quad, Quad> {
+    match(): Dataset {
         const newInstance: DatasetExt = <any> {};
         return newInstance;
     }
@@ -453,7 +606,7 @@ class DatasetExt extends DatasetCoreExt implements Dataset {
         throw new Error("Method not implemented.");
     }
 
-    toArray(): Quad[] {
+    toArray(): StarQuad[] {
         throw new Error("Method not implemented.");
     }
 
@@ -469,8 +622,72 @@ class DatasetExt extends DatasetCoreExt implements Dataset {
         throw new Error("Method not implemented.");
     }
 
-    union(): Dataset<Quad, Quad> {
+    union(): Dataset {
         const newInstance: DatasetExt = <any> {};
+        return newInstance;
+    }
+}
+
+
+async function test_dataset_covariance_plain(): Promise<Dataset> {
+    const quad: PlainQuad = <any> {};
+    const dataset: Dataset<PlainQuad> = <any> {};
+
+    // rdf-ext-like quad
+    interface QuadExt extends PlainQuad {
+        toCanonical(): string;
+    }
+    let datasetExt: Dataset<QuadExt, PlainQuad> = <any> {};
+
+    // stream coming from a generic parser
+    const stream: Stream<PlainQuad> = <any> {};
+
+    datasetExt = datasetExt.add(quad);
+    datasetExt = datasetExt.delete(quad);
+    datasetExt = datasetExt.addAll([quad, quad]);
+    datasetExt = datasetExt.addAll(dataset);
+    datasetExt.contains(dataset);
+    datasetExt = datasetExt.difference(dataset);
+    datasetExt.equals(dataset);
+    datasetExt.has(quad);
+    datasetExt.intersection(dataset);
+    datasetExt.union(dataset);
+    return datasetExt.import(stream);
+}
+
+class DatasetCoreExtPlain extends DatasetCoreExt {
+    match(): DatasetCore {
+        const newInstance: DatasetCoreExtPlain = <any> {};
+        return newInstance;
+    }
+
+    [Symbol.iterator](): Iterator<PlainQuad> {
+        throw new Error("Method not implemented.");
+    }
+}
+
+class DatasetExtPlain extends DatasetExt implements Dataset {
+    filter(): Dataset {
+        const newInstance: DatasetExtPlain = <any> {};
+        return newInstance;
+    }
+
+    map(): Dataset {
+        const newInstance: DatasetExtPlain = <any> {};
+        return newInstance;
+    }
+
+    match(): Dataset {
+        const newInstance: DatasetExtPlain = <any> {};
+        return newInstance;
+    }
+
+    toArray(): PlainQuad[] {
+        throw new Error("Method not implemented.");
+    }
+
+    union(): Dataset {
+        const newInstance: DatasetExtPlain = <any> {};
         return newInstance;
     }
 }
@@ -479,10 +696,20 @@ function testInheritance() {
     const datasetCoreExt: DatasetCoreExt = new DatasetCoreExt();
     const datasetCoreMatch: DatasetCore = datasetCoreExt.match();
 
+    const datasetCoreExtPlain: DatasetCoreExtPlain = new DatasetCoreExtPlain();
+    const datasetCorePlainMatch: DatasetCore = datasetCoreExtPlain.match();
+
     const datasetExt: DatasetExt = new DatasetExt();
     const datasetMatch: Dataset = datasetExt.match();
     const datasetMap: Dataset = datasetExt.map();
     const datasetUnion: Dataset = datasetExt.union();
     const datasetFilter: Dataset = datasetExt.filter();
     const datasetDifference: Dataset = datasetExt.difference();
+
+    const datasetExtPlain: DatasetExtPlain = new DatasetExtPlain();
+    const datasetPlainMatch: Dataset = datasetExtPlain.match();
+    const datasetPlainMap: Dataset = datasetExtPlain.map();
+    const datasetPlainUnion: Dataset = datasetExtPlain.union();
+    const datasetPlainFilter: Dataset = datasetExtPlain.filter();
+    const datasetPlainDifference: Dataset = datasetExtPlain.difference();
 }
