@@ -107,21 +107,21 @@ export interface Dataset<OutQuad extends BaseQuad = StarQuad, InQuad extends Bas
      *
      * This method is aligned with `Array.prototype.every()` in ECMAScript-262.
      */
-    every(iteratee: QuadFilterIteratee<OutQuad>['test']): boolean;
+    every(iteratee: (quad: OutQuad, dataset: this) => boolean): boolean;
 
     /**
      * Creates a new dataset with all the quads that pass the test implemented by the provided `iteratee`.
      *
      * This method is aligned with Array.prototype.filter() in ECMAScript-262.
      */
-    filter(iteratee: QuadFilterIteratee<OutQuad>['test']): Dataset<OutQuad, InQuad>;
+    filter(iteratee: (quad: OutQuad, dataset: this) => boolean): Dataset<OutQuad, InQuad>;
 
     /**
      * Executes the provided `iteratee` once on each quad in the dataset.
      *
      * This method is aligned with `Array.prototype.forEach()` in ECMAScript-262.
      */
-    forEach(iteratee: QuadRunIteratee<OutQuad>['run']): void;
+    forEach(callback: (quad: OutQuad, dataset: this) => void): void;
 
     /**
      * Imports all quads from the given stream into the dataset.
@@ -138,7 +138,7 @@ export interface Dataset<OutQuad extends BaseQuad = StarQuad, InQuad extends Bas
     /**
      * Returns a new dataset containing all quads returned by applying `iteratee` to each quad in the current dataset.
      */
-    map(iteratee: QuadMapIteratee<OutQuad>['map']): Dataset<OutQuad, InQuad>;
+    map(iteratee: (quad: OutQuad, dataset: Dataset<OutQuad>) => OutQuad): Dataset<OutQuad, InQuad>;
 
     /**
      * This method calls the `iteratee` on each `quad` of the `Dataset`. The first time the `iteratee` is called, the
@@ -149,7 +149,7 @@ export interface Dataset<OutQuad extends BaseQuad = StarQuad, InQuad extends Bas
      *
      * This method is aligned with `Array.prototype.reduce()` in ECMAScript-262.
      */
-    reduce<A = any>(iteratee: QuadReduceIteratee<A, OutQuad>['run'], initialValue?: A): A;
+    reduce<A = any>(callback: (accumulator: A, quad: OutQuad, dataset: this) => A, initialValue?: A): A;
 
     /**
      * Existential quantification method, tests whether some quads in the dataset pass the test implemented by the
@@ -159,7 +159,7 @@ export interface Dataset<OutQuad extends BaseQuad = StarQuad, InQuad extends Bas
      *
      * This method is aligned with `Array.prototype.some()` in ECMAScript-262.
      */
-    some(iteratee: QuadFilterIteratee<OutQuad>['test']): boolean;
+    some(iteratee: (quad: OutQuad, dataset: this) => boolean): boolean;
 
     /**
      * Returns the set of quads within the dataset as a host language native sequence, for example an `Array` in
@@ -200,34 +200,4 @@ export interface DatasetFactory<OutQuad extends BaseQuad = StarQuad, InQuad exte
      * Returns a new dataset and imports all quads, if given.
      */
     dataset(quads?: Dataset<InQuad> | InQuad[]): D;
-}
-
-export interface QuadFilterIteratee<Q extends BaseQuad = PlainQuad> {
-    /**
-     * A callable function that returns `true` if the input quad passes the test this function implements.
-     */
-    test(quad: Q, dataset: Dataset<Q>): boolean;
-}
-
-export interface QuadMapIteratee<Q extends BaseQuad = PlainQuad> {
-    /**
-     * A callable function that can be executed on a quad and returns a quad.
-     *
-     * The returned quad can be the given quad or a new one.
-     */
-    map(quad: Q, dataset: Dataset<Q>): Q;
-}
-
-export interface QuadReduceIteratee<A = any, Q extends BaseQuad = PlainQuad> {
-    /**
-     * A callable function that can be executed on an accumulator and quad and returns a new accumulator.
-     */
-    run(accumulator: A, quad: Q, dataset: Dataset<Q>): A;
-}
-
-export interface QuadRunIteratee<Q extends BaseQuad = PlainQuad> {
-    /**
-     * A callable function that can be executed on a quad.
-     */
-    run(quad: Q, dataset: Dataset<Q>): void;
 }
