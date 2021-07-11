@@ -349,7 +349,7 @@ function test_dataset() {
     const dataset2Reduce2: boolean[] = dataset2.reduce((acc: boolean[], quad: BaseQuad, dataset: Dataset<BaseQuad>) => acc, []);
     const dataset2Reduce3: string = dataset2.reduce((acc: string, quad: BaseQuad, dataset: Dataset<BaseQuad>) => acc, '');
     const dataset2Some: boolean = dataset2.some((quad: BaseQuad, dataset: Dataset<BaseQuad>) => true);
-    const dataset2ToArray: BaseQuad[] = dataset2.toArray();
+    const dataset2ToArray: BaseQuad[] = [...dataset2];
     const dataset2ToCanonical: string = dataset2.toCanonical();
     const dataset2ToStream: Stream<BaseQuad> = dataset2.toStream();
     const dataset2ToString: string = dataset2.toString();
@@ -389,7 +389,7 @@ function test_dataset() {
     const dataset4Reduce2: boolean[] = dataset4.reduce((acc: boolean[], quad: QuadBnode, dataset: Dataset<QuadBnode>) => acc, []);
     const dataset4Reduce3: string = dataset4.reduce((acc: string, quad: QuadBnode, dataset: Dataset<QuadBnode>) => acc, '');
     const dataset4Some: boolean = dataset4.some((quad: QuadBnode, dataset: Dataset<QuadBnode>) => true);
-    const dataset4ToArray: QuadBnode[] = dataset4.toArray();
+    const dataset4ToArray: QuadBnode[] = [...dataset4];
     const dataset4ToCanonical: string = dataset4.toCanonical();
     const dataset4ToStream: Stream<QuadBnode> = dataset4.toStream();
     const dataset4ToString: string = dataset4.toString();
@@ -428,7 +428,7 @@ function test_dataset() {
     const dataset6Reduce2: boolean[] = dataset6.reduce((acc: boolean[], quad: StarQuad, dataset: Dataset) => acc, []);
     const dataset6Reduce3: string = dataset6.reduce((acc: string, quad: StarQuad, dataset: Dataset) => acc, '');
     const dataset6Some: boolean = dataset6.some((quad: StarQuad, dataset: Dataset) => true);
-    const dataset6ToArray: StarQuad[] = dataset6.toArray();
+    const dataset6ToArray: StarQuad[] = [...dataset6];
     const dataset6ToCanonical: string = dataset6.toCanonical();
     const dataset6ToStream: Stream = dataset6.toStream();
     const dataset6ToString: string = dataset6.toString();
@@ -468,7 +468,7 @@ function test_dataset() {
     const dataset8Reduce2: boolean[] = dataset8.reduce((acc: boolean[], quad: QuadBnodeStar, dataset: Dataset<QuadBnodeStar>) => acc, []);
     const dataset8Reduce3: string = dataset8.reduce((acc: string, quad: QuadBnodeStar, dataset: Dataset<QuadBnodeStar>) => acc, '');
     const dataset8Some: boolean = dataset8.some((quad: QuadBnodeStar, dataset: Dataset<QuadBnodeStar>) => true);
-    const dataset8ToArray: QuadBnodeStar[] = dataset8.toArray();
+    const dataset8ToArray: QuadBnodeStar[] = [...dataset8];
     const dataset8ToCanonical: string = dataset8.toCanonical();
     const dataset8ToStream: Stream<QuadBnodeStar> = dataset8.toStream();
     const dataset8ToString: string = dataset8.toString();
@@ -606,10 +606,6 @@ class DatasetExt extends DatasetCoreExt implements Dataset {
         throw new Error("Method not implemented.");
     }
 
-    toArray(): StarQuad[] {
-        throw new Error("Method not implemented.");
-    }
-
     toCanonical(): string {
         throw new Error("Method not implemented.");
     }
@@ -680,10 +676,6 @@ class DatasetExtPlain extends DatasetExt implements Dataset {
     match(): Dataset {
         const newInstance: DatasetExtPlain = <any> {};
         return newInstance;
-    }
-
-    toArray(): PlainQuad[] {
-        throw new Error("Method not implemented.");
     }
 
     union(): Dataset {

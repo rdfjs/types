@@ -2,8 +2,9 @@
     "compilerOptions": {
         "module": "commonjs",
         "lib": [
-            "es6"
+            "ES6"
         ],
+        "target": "ES2015",
         "strict": true,
         "noImplicitReturns": true,
         "noImplicitAny": true,

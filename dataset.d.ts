@@ -162,14 +162,6 @@ export interface Dataset<OutQuad extends BaseQuad = StarQuad, InQuad extends Bas
     some(iteratee: (quad: OutQuad, dataset: this) => boolean): boolean;
 
     /**
-     * Returns the set of quads within the dataset as a host language native sequence, for example an `Array` in
-     * ECMAScript-262.
-     *
-     * Since a `Dataset` is an unordered set, the order of the quads within the returned sequence is arbitrary.
-     */
-    toArray(): OutQuad[];
-
-    /**
      * Returns an N-Quads string representation of the dataset, preprocessed with
      * {@link https://json-ld.github.io/normalization/spec/|RDF Dataset Normalization} algorithm.
      */
