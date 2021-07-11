@@ -1,10 +1,11 @@
 /* Dataset Interfaces */
 /* https://rdf.js.org/dataset-spec/ */
 
-import { Quad, BaseQuad, Term } from './data-model';
+import { BaseQuad, StarQuad, TermPattern } from './data-model';
 import { Stream } from './stream';
 
-export interface DatasetCore<OutQuad extends BaseQuad = Quad, InQuad extends BaseQuad = OutQuad> {
+
+export interface DatasetCore<OutQuad extends BaseQuad = StarQuad, InQuad extends BaseQuad = StarQuad> {
     /**
      * A non-negative integer that specifies the number of quads in the set.
      */
@@ -42,19 +43,19 @@ export interface DatasetCore<OutQuad extends BaseQuad = Quad, InQuad extends Bas
      * @param object    The optional exact object to match.
      * @param graph     The optional exact graph to match.
      */
-    match(subject?: Term | null, predicate?: Term | null, object?: Term | null, graph?: Term | null): DatasetCore<OutQuad, InQuad>;
+    match(subject?: InQuad['subject'] | TermPattern, predicate?: InQuad['predicate'] | TermPattern, object?: InQuad['object'] | TermPattern, graph?: InQuad['graph'] | TermPattern): DatasetCore<OutQuad, InQuad>;
 
     [Symbol.iterator](): Iterator<OutQuad>;
 }
 
-export interface DatasetCoreFactory<OutQuad extends BaseQuad = Quad, InQuad extends BaseQuad = OutQuad, D extends DatasetCore<OutQuad, InQuad> = DatasetCore<OutQuad, InQuad>> {
+export interface DatasetCoreFactory<OutQuad extends BaseQuad = StarQuad, InQuad extends BaseQuad = StarQuad, D extends DatasetCore<OutQuad, InQuad> = DatasetCore<OutQuad, InQuad>> {
     /**
      * Returns a new dataset and imports all quads, if given.
      */
     dataset(quads?: InQuad[]): D;
 }
 
-export interface Dataset<OutQuad extends BaseQuad = Quad, InQuad extends BaseQuad = OutQuad> extends DatasetCore<OutQuad, InQuad> {
+export interface Dataset<OutQuad extends BaseQuad = StarQuad, InQuad extends BaseQuad = StarQuad> extends DatasetCore<OutQuad, InQuad> {
     /**
      * Imports the quads into this dataset.
      *
@@ -82,7 +83,7 @@ export interface Dataset<OutQuad extends BaseQuad = Quad, InQuad extends BaseQua
      * @param object    The optional exact object to match.
      * @param graph     The optional exact graph to match.
      */
-    deleteMatches(subject?: Term, predicate?: Term, object?: Term, graph?: Term): this;
+    deleteMatches(subject?: InQuad['subject'] | TermPattern, predicate?: InQuad['predicate'] | TermPattern, object?: InQuad['object'] | TermPattern, graph?: InQuad['graph'] | TermPattern): this;
 
     /**
      * Returns a new dataset that contains all quads from the current dataset, not included in the given dataset.
@@ -161,14 +162,6 @@ export interface Dataset<OutQuad extends BaseQuad = Quad, InQuad extends BaseQua
     some(iteratee: (quad: OutQuad, dataset: this) => boolean): boolean;
 
     /**
-     * Returns the set of quads within the dataset as a host language native sequence, for example an `Array` in
-     * ECMAScript-262.
-     *
-     * Since a `Dataset` is an unordered set, the order of the quads within the returned sequence is arbitrary.
-     */
-    toArray(): OutQuad[];
-
-    /**
      * Returns an N-Quads string representation of the dataset, preprocessed with
      * {@link https://json-ld.github.io/normalization/spec/|RDF Dataset Normalization} algorithm.
      */
@@ -192,13 +185,13 @@ export interface Dataset<OutQuad extends BaseQuad = Quad, InQuad extends BaseQua
      */
     union(quads: Dataset<InQuad>): Dataset<OutQuad, InQuad>;
 
-    match(subject?: Term | null, predicate?: Term | null, object?: Term | null, graph?: Term | null): Dataset<OutQuad, InQuad>;
+    match(subject?: InQuad['subject'] | TermPattern, predicate?: InQuad['predicate'] | TermPattern, object?: InQuad['object'] | TermPattern, graph?: InQuad['graph'] | TermPattern): Dataset<OutQuad, InQuad>;
 }
 
-export interface DatasetFactory<OutQuad extends BaseQuad = Quad, InQuad extends BaseQuad = OutQuad, D extends Dataset<OutQuad, InQuad> = Dataset<OutQuad, InQuad>>
+export interface DatasetFactory<OutQuad extends BaseQuad = StarQuad, InQuad extends BaseQuad = StarQuad, D extends Dataset<OutQuad, InQuad> = Dataset<OutQuad, InQuad>>
     extends DatasetCoreFactory<OutQuad, InQuad, D> {
     /**
      * Returns a new dataset and imports all quads, if given.
      */
-    dataset(quads?: Dataset<InQuad>|InQuad[]): D;
+    dataset(quads?: Dataset<InQuad> | InQuad[]): D;
 }

@@ -1,10 +1,9 @@
 /* Stream Interfaces */
 /* https://rdf.js.org/stream-spec/ */
 
-import * as stream from "stream";
 import { EventEmitter } from "events";
 
-import { BaseQuad, Quad, Term } from './data-model';
+import { BaseQuad, StarQuad, TermPattern } from './data-model';
 
 /**
  * A quad stream.
@@ -19,7 +18,7 @@ import { BaseQuad, Quad, Term } from './data-model';
  * Optional events:
  * * prefix(prefix: string, iri: RDF.NamedNode): This event is emitted every time a prefix is mapped to some IRI.
  */
-export interface Stream<Q extends BaseQuad = Quad> extends EventEmitter {
+export interface Stream<Q extends BaseQuad = StarQuad> extends EventEmitter {
     /**
      * This method pulls a quad out of the internal buffer and returns it.
      * If there is no quad available, then it will return null.
@@ -36,7 +35,7 @@ export interface Stream<Q extends BaseQuad = Quad> extends EventEmitter {
  *
  * For example, parsers and transformations which generate quads can implement the Source interface.
  */
-export interface Source<Q extends BaseQuad = Quad> {
+export interface Source<OutQuad extends BaseQuad = StarQuad, InQuad extends BaseQuad = StarQuad> {
     /**
      * Returns a stream that processes all quads matching the pattern.
      *
@@ -46,7 +45,7 @@ export interface Source<Q extends BaseQuad = Quad> {
      * @param graph     The optional graph.
      * @return The resulting quad stream.
      */
-    match(subject?: Term | null, predicate?: Term | null, object?: Term | null, graph?: Term | null): Stream<Q>;
+     match(subject?: InQuad['subject'] | TermPattern, predicate?: InQuad['predicate'] | TermPattern, object?: InQuad['object'] | TermPattern, graph?: InQuad['graph'] | TermPattern): Stream<OutQuad>;
 }
 
 /**
@@ -78,7 +77,7 @@ export interface Sink<InputStream extends EventEmitter, OutputStream extends Eve
  *
  * Access to stores LDP or SPARQL endpoints can be implemented with a Store inteface.
  */
-export interface Store<Q extends BaseQuad = Quad> extends Source<Q>, Sink<Stream<Q>, EventEmitter> {
+export interface Store<OutQuad extends BaseQuad = StarQuad, InQuad extends BaseQuad = StarQuad> extends Source<OutQuad>, Sink<Stream<InQuad>, EventEmitter> {
     /**
      * Removes all streamed quads.
      *
@@ -88,7 +87,7 @@ export interface Store<Q extends BaseQuad = Quad> extends Source<Q>, Sink<Stream
      * @param stream The stream that will be consumed.
      * @return The resulting event emitter.
      */
-    remove(stream: Stream<Q>): EventEmitter;
+    remove(stream: Stream<InQuad>): EventEmitter;
 
     /**
      * All quads matching the pattern will be removed.
@@ -102,7 +101,7 @@ export interface Store<Q extends BaseQuad = Quad> extends Source<Q>, Sink<Stream
      * @param graph     The optional graph.
      * @return The resulting event emitter.
      */
-    removeMatches(subject?: Term | null, predicate?: Term | null, object?: Term | null, graph?: Term | null)
+    removeMatches(subject?: InQuad['subject'] | TermPattern, predicate?: InQuad['predicate'] | TermPattern, object?: InQuad['object'] | TermPattern, graph?: InQuad['graph'] | TermPattern)
         : EventEmitter;
 
     /**
@@ -114,5 +113,5 @@ export interface Store<Q extends BaseQuad = Quad> extends Source<Q>, Sink<Stream
      * @param graph The graph term or string to match.
      * @return The resulting event emitter.
      */
-    deleteGraph(graph: Q['graph'] | string): EventEmitter;
+    deleteGraph(graph: InQuad['graph'] | string): EventEmitter;
 }
