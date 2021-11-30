@@ -1,6 +1,7 @@
 {
   "name": "@rdfjs/types",
   "version": "1.0.1",
+  "license": "MIT",
   "types": "index.d.ts",
   "author": {
     "name": "RDF/JS Representation Task Force",
