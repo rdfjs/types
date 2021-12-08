@@ -8,7 +8,7 @@
  * @see Literal
  * @see Variable
  * @see DefaultGraph
- * @see Quad
+ * @see BaseQuad
  */
 export type Term = NamedNode | BlankNode | Literal | Variable | DefaultGraph | BaseQuad;
 
