@@ -9,7 +9,7 @@ The types should match the RDF/JS specifications ([Data Model](https://rdf.js.or
 Installed as usual using your favourite package manager.
 
 ```
-yarn add @types/rdf-js
+yarn add @rdfjs/types
 ```
 
 This package does not provide code, only interafces for the RDF/JS specifications. Import them to strong-type your RDF/JS code.
