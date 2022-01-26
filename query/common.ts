@@ -178,6 +178,8 @@ export type Query = QueryBindings | QueryBoolean | QueryQuads | QueryVoid;
 
 /**
  * Bindings represents the mapping of variables to RDF values using an immutable Map-like representation.
+ * This means that methods such as `set` and `delete` do not modify this instance,
+ * but they return a new Bindings instance that contains the modification.
  *
  * Bindings instances are created using a BindingsFactory.
  *
@@ -196,13 +198,30 @@ export interface Bindings extends Iterable<[RDF.Variable, RDF.Term]> {
    */
   get: (key: RDF.Variable) => RDF.Term | undefined;
   /**
+   * Create a new Bindings object by adding the given variable and value mapping.
+   *
+   * If the variable already exists in the binding, then the existing mapping is overwritten.
+   *
+   * @param key The variable key.
+   * @param value The value.
+   */
+  set: (key: RDF.Variable, value: RDF.Term) => Bindings;
+  /**
+   * Create a new Bindings object by removing the given variable.
+   *
+   * If the variable does not exist in the binding, a copy of the Bindings object is returned.
+   *
+   * @param key The variable key.
+   */
+  delete: (key: RDF.Variable) => Bindings;
+  /**
    * Obtain all variables for which mappings exist.
    */
-  keys: () => Iterator<RDF.Variable>;
+  keys: () => Iterable<RDF.Variable>;
   /**
    * Obtain all values that are mapped to.
    */
-  values: () => Iterator<RDF.Term>;
+  values: () => Iterable<RDF.Term>;
   /**
    * Iterate over all variable-value pairs.
    * @param fn A callback that is called for each variable-value pair
@@ -222,6 +241,36 @@ export interface Bindings extends Iterable<[RDF.Variable, RDF.Term]> {
    * @param other A Bindings object.
    */
   equals(other: Bindings | null | undefined): boolean;
+  /**
+   * Create a new Bindings object by filtering entries using a callback.
+   * @param fn A callback that is applied on each entry.
+   *           Returning true indicates that this entry must be contained in the resulting Bindings object.
+   */
+  filter: (fn: (value: RDF.Term, key: RDF.Variable) => boolean) => Bindings;
+  /**
+   * Create a new Bindings object by mapping entries using a callback.
+   * @param fn A callback that is applied on each entry, in which the original value is replaced by the returned value.
+   */
+  map: (fn: (value: RDF.Term, key: RDF.Variable) => RDF.Term) => Bindings;
+  /**
+   * Merge this bindings with another.
+   *
+   * If a merge conflict occurs (this and other have an equal variable with unequal value),
+   * then undefined is returned.
+   *
+   * @param other A Bindings object.
+   */
+  merge: (other: Bindings) => Bindings | undefined;
+  /**
+   * Merge this bindings with another, where merge conflicts can be resolved using a callback function.
+   * @param merger A function that is invoked when a merge conflict occurs,
+   *               for which the returned value is considered the merged value.
+   * @param other A Bindings object.
+   */
+  mergeWith: (
+    merger: (self: RDF.Term, other: RDF.Term, key: RDF.Variable) => RDF.Term,
+    other: Bindings,
+  ) => Bindings;
 }
 
 /**
@@ -233,58 +282,10 @@ export interface BindingsFactory {
    * @param entries An array of entries, where each entry is a tuple containing a variable and a term.
    */
   bindings: (entries?: [RDF.Variable, RDF.Term][]) => Bindings;
+
   /**
-   * Create a new Bindings object by adding the given variable and value mapping.
-   *
-   * If the variable already exists in the binding, then the existing mapping is overwritten.
-   *
+   * Create a copy of the given bindings object using this factory.
    * @param bindings A Bindings object.
-   * @param key The variable key.
-   * @param value The value.
    */
-  set: (bindings: Bindings, key: RDF.Variable, value: RDF.Term) => Bindings;
-  /**
-   * Create a new Bindings object by removing the given variable.
-   *
-   * If the variable does not exist in the binding, a copy of the Bindings object is returned.
-   *
-   * @param bindings A Bindings object.
-   * @param key The variable key.
-   */
-  delete: (bindings: Bindings, key: RDF.Variable) => Bindings;
-  /**
-   * Create a new Bindings object from the given Bindings object by filtering entries using a callback.
-   * @param bindings The Bindings to filter.
-   * @param fn A callback that is applied on each entry.
-   *           Returning true indicates that this entry must be contained in the resulting Bindings object.
-   */
-  filter: (bindings: Bindings, fn: (value: RDF.Term, key: RDF.Variable) => boolean) => Bindings;
-  /**
-   * Create a new Bindings object from the given Bindings object by mapping entries using a callback.
-   * @param bindings The Bindings to map.
-   * @param fn A callback that is applied on each entry, in which the original value is replaced by the returned value.
-   */
-  map: (bindings: Bindings, fn: (value: RDF.Term, key: RDF.Variable) => RDF.Term) => Bindings;
-  /**
-   * Merge two bindings together.
-   *
-   * If a merge conflict occurs (left and right have an equal variable with unequal value),
-   * then undefined is returned.
-   *
-   * @param left A Bindings object.
-   * @param right A Bindings object.
-   */
-  merge: (left: Bindings, right: Bindings) => Bindings | undefined;
-  /**
-   * Merge two bindings together, where merge conflicts can be resolved using a callback function.
-   * @param merger A function that is invoked when a merge conflict occurs,
-   *               for which the returned value is considered the merged value.
-   * @param left A Bindings object.
-   * @param right A Bindings object.
-   */
-  mergeWith: (
-    merger: (left: RDF.Term, right: RDF.Term, key: RDF.Variable) => RDF.Term,
-    left: Bindings,
-    right: Bindings,
-  ) => Bindings;
+  fromBindings: (bindings: Bindings) => Bindings;
 }
