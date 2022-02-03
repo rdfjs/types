@@ -4,7 +4,6 @@
 import * as RDF from '../data-model';
 import { Bindings, Query, ResultStream } from './common';
 
-// TODO: we may consider defining some standards, like 'string', RDF.Source, ...
 /**
  * Context objects provide a way to pass additional bits information to the query engine when executing a query.
  */
@@ -12,7 +11,7 @@ export interface QueryContext<SourceType> {
   /**
    * An array of data sources the query engine must use.
    */
-  sources: [SourceType, ...SourceType[]];
+  sources?: [SourceType, ...SourceType[]];
   /**
    * The date that should be used by SPARQL operations such as NOW().
    */
@@ -29,7 +28,7 @@ export interface QueryContext<SourceType> {
 export interface QueryStringContext<SourceType> extends QueryContext<SourceType> {
   /**
    * The format in which the query string is defined.
-   * Defaults to { language: 'SPARQL', version: '1.1' }
+   * Defaults to { language: 'sparql', version: '1.1' }
    */
   queryFormat?: QueryFormat;
   /**
@@ -48,7 +47,7 @@ export type QueryAlgebraContext<SourceType> = QueryContext<SourceType>;
  */
 export interface QueryFormat {
   /**
-   * The query language, e.g. 'SPARQL'.
+   * The query language, e.g. 'sparql'.
    */
   language: string;
   /**
@@ -76,7 +75,13 @@ export type Algebra = any;
  * @param SourceType The allowed sources over which queries can be executed.
  * @param QueryType The allowed query types.
  */
-export interface Queryable<QueryFormatType extends string | Algebra, SourceType, QueryType extends Query> {
+export interface Queryable<
+  QueryFormatTypesAvailable extends string | Algebra,
+  SourceType,
+  QueryType extends Query,
+  QueryStringContextType extends QueryStringContext<SourceType>,
+  QueryAlgebraContextType extends QueryAlgebraContext<SourceType>,
+> {
   /**
    * Initiate a given query.
    *
@@ -86,7 +91,10 @@ export interface Queryable<QueryFormatType extends string | Algebra, SourceType,
    *
    * @see Query
    */
-  query(query: QueryFormatType, context?: QueryStringContext<SourceType>): Promise<QueryType>;
+  query<QueryFormatType extends QueryFormatTypesAvailable>(
+    query: QueryFormatType,
+    context?: QueryFormatType extends string ? QueryStringContextType : QueryAlgebraContextType,
+  ): Promise<QueryType>;
 }
 
 /**
@@ -94,22 +102,41 @@ export interface Queryable<QueryFormatType extends string | Algebra, SourceType,
  *
  * This interface guarantees that result objects are of the expected type as defined by the SPARQL spec.
  */
-export type SparqlQueryable<QueryFormatType extends string | Algebra, SourceType, SupportedResultType> = unknown
-  & (SupportedResultType extends BindingsResult ? {
-  queryBindings(query: QueryFormatType, context?: QueryStringContext<SourceType>): Promise<ResultStream<Bindings>>;
+export type SparqlQueryable<
+  QueryFormatTypesAvailable extends string | Algebra,
+  SourceType,
+  QueryStringContextType extends QueryStringContext<SourceType>,
+  QueryAlgebraContextType extends QueryAlgebraContext<SourceType>,
+  SupportedResultType,
+> = unknown
+  & (SupportedResultType extends BindingsResultSupport ? {
+  queryBindings<QueryFormatType extends QueryFormatTypesAvailable>(
+    query: QueryFormatType,
+    context?: QueryFormatType extends string ? QueryStringContextType : QueryAlgebraContextType,
+  ): Promise<ResultStream<Bindings>>;
 } : unknown)
-  & (SupportedResultType extends BooleanResult ? {
-  queryBoolean(query: QueryFormatType, context?: QueryStringContext<SourceType>): Promise<boolean>;
+  & (SupportedResultType extends BooleanResultSupport ? {
+  queryBoolean<QueryFormatType extends QueryFormatTypesAvailable>(
+    query: QueryFormatType,
+    context?: QueryFormatType extends string ? QueryStringContextType : QueryAlgebraContextType,
+  ): Promise<boolean>;
 } : unknown)
-  & (SupportedResultType extends QuadsResult ? {
-  queryQuads(query: QueryFormatType, context?: QueryStringContext<SourceType>): Promise<ResultStream<RDF.Quad>>;
+  & (SupportedResultType extends QuadsResultSupport ? {
+  queryQuads<QueryFormatType extends QueryFormatTypesAvailable>(
+    query: QueryFormatType,
+    context?: QueryFormatType extends string ? QueryStringContextType : QueryAlgebraContextType,
+  ): Promise<ResultStream<RDF.Quad>>;
 } : unknown)
-  & (SupportedResultType extends VoidResult ? {
-  queryVoid(query: QueryFormatType, context?: QueryStringContext<SourceType>): Promise<void>;
+  & (SupportedResultType extends VoidResultSupport ? {
+  queryVoid<QueryFormatType extends QueryFormatTypesAvailable>(
+    query: QueryFormatType,
+    context?: QueryFormatType extends string ? QueryStringContextType : QueryAlgebraContextType,
+  ): Promise<void>;
 } : unknown)
   ;
 
-export type BindingsResult = { bindings: true };
-export type VoidResult = { void: true };
-export type QuadsResult = { quads: true };
-export type BooleanResult = { boolean: true };
+export type SparqlResultSupport = BindingsResultSupport & VoidResultSupport & QuadsResultSupport & BooleanResultSupport;
+export type BindingsResultSupport = { bindings: true };
+export type VoidResultSupport = { void: true };
+export type QuadsResultSupport = { quads: true };
+export type BooleanResultSupport = { boolean: true };
