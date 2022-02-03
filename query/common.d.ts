@@ -3,7 +3,6 @@
 
 import { EventEmitter } from "events";
 import * as RDF from '../data-model';
-import { Term } from '../data-model';
 
 /**
  * Helper union type for quad term names.
@@ -71,35 +70,30 @@ export interface QueryResultCardinality {
 
   /**
    * Indicates an estimated of the number of results in the stream if type = "estimate",
-   * or the exact number of quads in the stream if type = "exact".
+   * or the exact number of results in the stream if type = "exact".
    */
   value: number;
 }
 
 /**
- * A QueryResultMetadata is an object that contains metadata about a certain query result.
+ * BaseMetadataQuery is helper interface that provides a metadata callback.
  */
-export interface QueryResultMetadata<OrderItemsType extends QuadTermName | RDF.Variable> {
+interface BaseMetadataQuery<OrderItemsType extends QuadTermName | RDF.Variable, AdditionalMetadataType extends unknown> {
   /**
-   * A callback field for obtaining the cardinality of the result stream.
+   * Asynchronously return metadata of the current result.
    */
-  cardinality(precision?:  'estimate' | 'exact'): Promise<QueryResultCardinality>;
-
-  /**
-   * A callback for obtaining the current result ordering of the result stream.
-   */
-  order(): Promise<QueryOperationOrder<OrderItemsType>[]>;
-
-  /**
-   * A callback for obtaining all available alternative result orderings for the current query.
-   */
-  availableOrders(): Promise<QueryOperationOrder<OrderItemsType>[]>;
-
-  /**
-   * Custom properties
-   */
-  [key: string]: any;
+  metadata<M extends MetadataOpts>(opts?: M): Promise<ConditionalMetadataType<AdditionalMetadataType, M, OrderItemsType>>;
 }
+
+export type MetadataOpts = CardinalityMetadataOpts | OrderMetadataOpts | AvailableOrdersMetadataOpts;
+export interface CardinalityMetadataOpts { cardinality: 'estimate' | 'exact'; }
+export interface OrderMetadataOpts { order: true; }
+export interface AvailableOrdersMetadataOpts { availableOrders: true; }
+
+export type ConditionalMetadataType<AdditionalMetadataType, M, OrderItemsType extends QuadTermName | RDF.Variable> = AdditionalMetadataType
+  & (M extends CardinalityMetadataOpts ? { cardinality: QueryResultCardinality } : Record<string, unknown>)
+  & (M extends OrderMetadataOpts ? { order: QueryOperationOrder<OrderItemsType>['terms'] } : Record<string, unknown>)
+  & (M extends AvailableOrdersMetadataOpts ? { availableOrders: QueryOperationOrder<OrderItemsType>[] } : Record<string, unknown>);
 
 /**
  * Options that can be passed when executing a query.
@@ -130,29 +124,22 @@ export interface BaseQuery {
    * a boolean or void depending on the semantics of the given query.
    */
   execute(opts?: any): Promise<ResultStream<any> | boolean | void>;
-
-  /**
-   * Asynchronously metadata of the current result.
-   */
-  metadata?: QueryResultMetadata<any>;
 }
 
 /**
  * Query object that returns bindings.
  */
-export interface QueryBindings extends BaseQuery {
+export interface QueryBindings extends BaseQuery, BaseMetadataQuery<RDF.Variable, { variables: RDF.Variable[] }> {
   resultType: 'bindings';
   execute(opts?: QueryExecuteOptions<RDF.Variable>): Promise<ResultStream<Bindings>>;
-  metadata: QueryResultMetadata<RDF.Variable> & { variables(): Promise<RDF.Variable[]>; };
 }
 
 /**
  * Query object that returns quads.
  */
-export interface QueryQuads extends BaseQuery {
+export interface QueryQuads extends BaseQuery, BaseMetadataQuery<QuadTermName, unknown> {
   resultType: 'quads';
   execute(opts?: QueryExecuteOptions<QuadTermName>): Promise<ResultStream<RDF.Quad>>;
-  metadata: QueryResultMetadata<QuadTermName>;
 }
 
 /**
