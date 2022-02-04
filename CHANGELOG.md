@@ -1,5 +1,11 @@
 # @rdfjs/types
 
+## 1.1.0-next.1
+
+### Patch Changes
+
+- Make queryable metadata types configurable
+
 ## 1.1.0-next.0
 
 ### Minor Changes
