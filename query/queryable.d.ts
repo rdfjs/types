@@ -71,14 +71,18 @@ export type Algebra = any;
 /**
  * Generic query engine interfaces.
  * It allow engines to return any type of result object for any type of query.
- * @param QueryFormatType The format of the query, either string or algebra object.
+ * @param QueryFormatTypesAvailable The format of the query, either string or algebra object.
  * @param SourceType The allowed sources over which queries can be executed.
+ * @param SupportedMetadataType The allowed metadata types.
  * @param QueryType The allowed query types.
+ * @param QueryStringContextType Type of the string-based query context.
+ * @param QueryAlgebraContextType Type of the algebra-based query context.
  */
 export interface Queryable<
   QueryFormatTypesAvailable extends string | Algebra,
   SourceType,
-  QueryType extends Query,
+  SupportedMetadataType,
+  QueryType extends Query<SupportedMetadataType>,
   QueryStringContextType extends QueryStringContext<SourceType>,
   QueryAlgebraContextType extends QueryAlgebraContext<SourceType>,
 > {

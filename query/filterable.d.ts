@@ -105,7 +105,7 @@ export interface ExpressionFactory {
  * instantiated for each variable's binding in the resulting quad stream when
  * applying the Expression filter.
  */
-export interface FilterableSource {
+export interface FilterableSource<SupportedMetadataType> {
   /**
    * May reject given an unsupported expression.
    */
@@ -119,5 +119,5 @@ export interface FilterableSource {
       length?: number;
       start?: number;
     },
-  ): Promise<QueryQuads>;
+  ): Promise<QueryQuads<SupportedMetadataType>>;
 }

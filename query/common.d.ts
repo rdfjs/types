@@ -78,14 +78,22 @@ export interface QueryResultCardinality {
 /**
  * BaseMetadataQuery is helper interface that provides a metadata callback.
  */
-interface BaseMetadataQuery<OrderItemsType extends QuadTermName | RDF.Variable, AdditionalMetadataType extends unknown> {
+interface BaseMetadataQuery<OrderItemsType extends QuadTermName | RDF.Variable, AdditionalMetadataType extends unknown, SupportedMetadataType> {
   /**
    * Asynchronously return metadata of the current result.
    */
-  metadata<M extends MetadataOpts>(opts?: M): Promise<ConditionalMetadataType<AdditionalMetadataType, M, OrderItemsType>>;
+  metadata<M extends MetadataOpts<SupportedMetadataType>>(opts?: M): Promise<ConditionalMetadataType<AdditionalMetadataType, M, OrderItemsType>>;
 }
 
-export type MetadataOpts = CardinalityMetadataOpts | OrderMetadataOpts | AvailableOrdersMetadataOpts;
+export type AllMetadataSupport = CardinalityMetadataSupport & OrderMetadataSupport & AvailableOrdersMetadataSupport;
+export type CardinalityMetadataSupport = { cardinality: true };
+export type OrderMetadataSupport = { order: true };
+export type AvailableOrdersMetadataSupport = { availableOrders: true };
+
+export type MetadataOpts<SupportedMetadataType> =
+  (SupportedMetadataType extends CardinalityMetadataSupport ? CardinalityMetadataOpts : unknown) |
+  (SupportedMetadataType extends OrderMetadataSupport ? OrderMetadataOpts : unknown) |
+  (SupportedMetadataType extends AvailableOrdersMetadataSupport ? AvailableOrdersMetadataOpts : unknown);
 export interface CardinalityMetadataOpts { cardinality: 'estimate' | 'exact'; }
 export interface OrderMetadataOpts { order: true; }
 export interface AvailableOrdersMetadataOpts { availableOrders: true; }
@@ -129,7 +137,7 @@ export interface BaseQuery {
 /**
  * Query object that returns bindings.
  */
-export interface QueryBindings extends BaseQuery, BaseMetadataQuery<RDF.Variable, { variables: RDF.Variable[] }> {
+export interface QueryBindings<SupportedMetadataType> extends BaseQuery, BaseMetadataQuery<RDF.Variable, { variables: RDF.Variable[] }, SupportedMetadataType> {
   resultType: 'bindings';
   execute(opts?: QueryExecuteOptions<RDF.Variable>): Promise<ResultStream<Bindings>>;
 }
@@ -137,7 +145,7 @@ export interface QueryBindings extends BaseQuery, BaseMetadataQuery<RDF.Variable
 /**
  * Query object that returns quads.
  */
-export interface QueryQuads extends BaseQuery, BaseMetadataQuery<QuadTermName, unknown> {
+export interface QueryQuads<SupportedMetadataType> extends BaseQuery, BaseMetadataQuery<QuadTermName, unknown, SupportedMetadataType> {
   resultType: 'quads';
   execute(opts?: QueryExecuteOptions<QuadTermName>): Promise<ResultStream<RDF.Quad>>;
 }
@@ -161,7 +169,7 @@ export interface QueryVoid extends BaseQuery {
 /**
  * Union type for the different query types.
  */
-export type Query = QueryBindings | QueryBoolean | QueryQuads | QueryVoid;
+export type Query<SupportedMetadataType> = QueryBindings<SupportedMetadataType> | QueryBoolean | QueryQuads<SupportedMetadataType> | QueryVoid;
 
 /**
  * Bindings represents the mapping of variables to RDF values using an immutable Map-like representation.
