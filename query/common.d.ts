@@ -9,6 +9,7 @@ import * as RDF from '../data-model';
  */
 export type QuadTermName = 'subject' | 'predicate' | 'object' | 'graph';
 
+// TODO: merge this with Stream upon the next major change
 /**
  * Custom typings for the RDF/JS ResultStream interface as the current
  * typings restrict the generic param Q to extensions of "BaseQuad",

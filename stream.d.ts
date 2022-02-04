@@ -6,6 +6,7 @@ import { EventEmitter } from "events";
 
 import { BaseQuad, Quad, Term } from './data-model';
 
+// TODO: merge this with ResultStream upon the next major change
 /**
  * A quad stream.
  * This stream is only readable, not writable.
