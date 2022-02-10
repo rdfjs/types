@@ -1,5 +1,22 @@
 # @rdfjs/types
 
+## 1.1.0-next.1
+
+### Patch Changes
+
+- Make queryable metadata types configurable
+
+## 1.1.0-next.0
+
+### Minor Changes
+
+- 95f1e31: Dataset: Use correct type of `dataset` in methods with callbacks
+- bc7163e: Add queryable interfaces
+
+### Patch Changes
+
+- 8164183: Documentation Fix: Update reference of Quad to BaseQuad in the definition of Term in order to align with the type declaration.
+
 ## 1.0.1
 
 ### Patch Changes

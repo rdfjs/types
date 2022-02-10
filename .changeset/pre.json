@@ -1,0 +1,13 @@
+{
+  "mode": "pre",
+  "tag": "next",
+  "initialVersions": {
+    "@rdfjs/types": "1.0.1"
+  },
+  "changesets": [
+    "friendly-lies-suffer",
+    "long-files-look",
+    "seven-shrimps-build",
+    "tough-guests-flash"
+  ]
+}
