@@ -47,7 +47,7 @@ function test_bindings() {
     }
 }
 
-async function test_queryable() {
+async function test_stringqueryable() {
     const engine: StringQueryable<AllMetadataSupport, QueryAlgebraContext> = <any> {};
 
     const query: Query<SparqlResultSupport> = await engine.query('SELECT * WHERE { ... }');
@@ -70,7 +70,7 @@ async function test_queryable() {
     }
 }
 
-async function test_sparqlqueryable() {
+async function test_stringsparqlqueryable() {
     const engine: StringSparqlQueryable<SparqlResultSupport> = <any> {};
 
     const bindings: ResultStream<Bindings> = await engine.queryBindings('SELECT * WHERE { ... }');
@@ -79,7 +79,20 @@ async function test_sparqlqueryable() {
     const done: void = await engine.queryVoid('INSERT WHERE { ... }');
 }
 
-async function test_sparqlqueryable_partial() {
+async function test_algebrasparqlqueryable() {
+    interface AlgebraType { mock: 'algebra' };
+    const engine: AlgebraSparqlQueryable<AlgebraType, SparqlResultSupport> = <any> {};
+
+    const bindings: ResultStream<Bindings> = await engine.queryBindings({ mock: 'algebra' });
+    const quads: ResultStream<Quad> = await engine.queryQuads({ mock: 'algebra' });
+    const bool: boolean = await engine.queryBoolean({ mock: 'algebra' });
+    const done: void = await engine.queryVoid({ mock: 'algebra' });
+
+    // @ts-ignore
+    await engine.queryBoolean('ASK WHERE { ... }'); // Query type doesn't match AlgebraType
+}
+
+async function test_stringsparqlqueryable_partial() {
     const engine: StringSparqlQueryable<BindingsResultSupport & QuadsResultSupport> = <any> {};
 
     const bindings: ResultStream<Bindings> = await engine.queryBindings('SELECT * WHERE { ... }');
@@ -88,4 +101,16 @@ async function test_sparqlqueryable_partial() {
     const bool: boolean = await engine.queryBoolean('ASK WHERE { ... }'); // Unsupported
     // @ts-ignore
     const done: void = await engine.queryVoid('INSERT WHERE { ... }'); // Unsupported
+}
+
+async function test_algebrasparqlqueryable_partial() {
+    interface AlgebraType { mock: 'algebra' };
+    const engine: AlgebraSparqlQueryable<AlgebraType, BindingsResultSupport & QuadsResultSupport> = <any> {};
+
+    const bindings: ResultStream<Bindings> = await engine.queryBindings({ mock: 'algebra' });
+    const quads: ResultStream<Quad> = await engine.queryQuads({ mock: 'algebra' });
+    // @ts-ignore
+    const bool: boolean = await engine.queryBoolean({ mock: 'algebra' }); // Unsupported
+    // @ts-ignore
+    const done: void = await engine.queryVoid({ mock: 'algebra' }); // Unsupported
 }
