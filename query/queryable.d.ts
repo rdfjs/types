@@ -102,7 +102,7 @@ export interface Queryable<
 }
 
 /**
- * SPARQL-constrainted query interface.
+ * SPARQL-constrained query interface.
  *
  * This interface guarantees that result objects are of the expected type as defined by the SPARQL spec.
  */
