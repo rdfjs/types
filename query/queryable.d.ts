@@ -68,13 +68,6 @@ export interface QueryFormat {
 }
 
 /**
- * Placeholder to represent SPARQL Algebra trees.
- * Algebra typings are TBD. Reference implementations include:
- * - https://www.npmjs.com/package/sparqlalgebrajs
- */
-export type Algebra = any;
-
-/**
  * Generic query engine interfaces.
  * It allow engines to return any type of result object for string queries.
  * @param SupportedMetadataType The allowed metadata types.
@@ -99,10 +92,12 @@ export interface StringQueryable<
 /**
  * Generic query engine interfaces.
  * It allow engines to return any type of result object for Algebra queries.
+ * @param AlgebraType The supported algebra types.
  * @param SupportedMetadataType The allowed metadata types.
  * @param QueryStringContextType Type of the algebra-based query context.
  */
  export interface AlgebraQueryable<
+ AlgebraType,
  SupportedMetadataType,
  QueryAlgebraContextType extends QueryAlgebraContext = QueryAlgebraContext,
 > {
@@ -115,7 +110,7 @@ export interface StringQueryable<
   *
   * @see Query
   */
- query(query: Algebra, context?: QueryAlgebraContextType): Promise<Query<SupportedMetadataType>>;
+ query(query: AlgebraType, context?: QueryAlgebraContextType): Promise<Query<SupportedMetadataType>>;
 }
 
 /**
@@ -143,18 +138,18 @@ export type StringSparqlQueryable<SupportedResultType, QueryStringContextType ex
  *
  * This interface guarantees that result objects are of the expected type as defined by the SPARQL spec.
  */
- export type AlgebraSparqlQueryable<SupportedResultType, QueryAlgebraContextType extends QueryAlgebraContext = QueryAlgebraContext> = unknown
+ export type AlgebraSparqlQueryable<AlgebraType, SupportedResultType, QueryAlgebraContextType extends QueryAlgebraContext = QueryAlgebraContext> = unknown
  & (SupportedResultType extends BindingsResultSupport ? {
- queryBindings(query: Algebra, context?: QueryAlgebraContextType): Promise<ResultStream<Bindings>>;
+ queryBindings(query: AlgebraType, context?: QueryAlgebraContextType): Promise<ResultStream<Bindings>>;
 } : unknown)
  & (SupportedResultType extends BooleanResultSupport ? {
- queryBoolean(query: Algebra, context?: QueryAlgebraContextType): Promise<boolean>;
+ queryBoolean(query: AlgebraType, context?: QueryAlgebraContextType): Promise<boolean>;
 } : unknown)
  & (SupportedResultType extends QuadsResultSupport ? {
- queryQuads(query: Algebra, context?: QueryAlgebraContextType): Promise<ResultStream<RDF.Quad>>;
+ queryQuads(query: AlgebraType, context?: QueryAlgebraContextType): Promise<ResultStream<RDF.Quad>>;
 } : unknown)
  & (SupportedResultType extends VoidResultSupport ? {
- queryVoid(query: Algebra, context?: QueryAlgebraContextType): Promise<void>;
+ queryVoid(query: AlgebraType, context?: QueryAlgebraContextType): Promise<void>;
 } : unknown)
 ;
 
