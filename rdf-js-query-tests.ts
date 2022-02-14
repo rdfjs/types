@@ -4,12 +4,21 @@ import {
     BindingsFactory,
     Bindings,
     Term,
-    Queryable,
+    StringQueryable,
+    AlgebraQueryable,
     SparqlResultSupport,
     MetadataOpts,
     QueryStringContext,
     QueryAlgebraContext,
-    AllMetadataSupport, Query, Variable, ResultStream, Quad, SparqlQueryable, BindingsResultSupport, QuadsResultSupport
+    AllMetadataSupport, 
+    Query, 
+    Variable, 
+    ResultStream, 
+    Quad, 
+    StringSparqlQueryable, 
+    AlgebraSparqlQueryable, 
+    BindingsResultSupport, 
+    QuadsResultSupport,
 } from ".";
 
 function test_bindings() {
@@ -39,7 +48,7 @@ function test_bindings() {
 }
 
 async function test_queryable() {
-    const engine: Queryable<string, string, AllMetadataSupport, Query<SparqlResultSupport>, QueryStringContext<string>, QueryAlgebraContext<string>> = <any> {};
+    const engine: StringQueryable<AllMetadataSupport, QueryAlgebraContext> = <any> {};
 
     const query: Query<SparqlResultSupport> = await engine.query('SELECT * WHERE { ... }');
     switch (query.resultType) {
@@ -62,7 +71,7 @@ async function test_queryable() {
 }
 
 async function test_sparqlqueryable() {
-    const engine: SparqlQueryable<string, string, QueryStringContext<string>, QueryAlgebraContext<string>, SparqlResultSupport> = <any> {};
+    const engine: StringSparqlQueryable<SparqlResultSupport> = <any> {};
 
     const bindings: ResultStream<Bindings> = await engine.queryBindings('SELECT * WHERE { ... }');
     const quads: ResultStream<Quad> = await engine.queryQuads('CONSTRUCT WHERE { ... }');
@@ -71,7 +80,7 @@ async function test_sparqlqueryable() {
 }
 
 async function test_sparqlqueryable_partial() {
-    const engine: SparqlQueryable<string, string, QueryStringContext<string>, QueryAlgebraContext<string>, BindingsResultSupport & QuadsResultSupport> = <any> {};
+    const engine: StringSparqlQueryable<BindingsResultSupport & QuadsResultSupport> = <any> {};
 
     const bindings: ResultStream<Bindings> = await engine.queryBindings('SELECT * WHERE { ... }');
     const quads: ResultStream<Quad> = await engine.queryQuads('CONSTRUCT WHERE { ... }');
