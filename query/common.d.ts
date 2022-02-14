@@ -185,31 +185,31 @@ export interface Bindings extends Iterable<[RDF.Variable, RDF.Term]> {
   type: 'bindings';
   /**
    * Check if a binding exist for the given variable.
-   * @param key A variable
+   * @param key A variable term or string. If it is a string, no `?` prefix must be given.
    */
-  has: (key: RDF.Variable) => boolean;
+  has: (key: RDF.Variable | string) => boolean;
   /**
    * Obtain the binding value for the given variable.
-   * @param key A variable
+   * @param key A variable term or string. If it is a string, no `?` prefix must be given.
    */
-  get: (key: RDF.Variable) => RDF.Term | undefined;
+  get: (key: RDF.Variable | string) => RDF.Term | undefined;
   /**
    * Create a new Bindings object by adding the given variable and value mapping.
    *
    * If the variable already exists in the binding, then the existing mapping is overwritten.
    *
-   * @param key The variable key.
+   * @param key The variable key term or string. If it is a string, no `?` prefix must be given.
    * @param value The value.
    */
-  set: (key: RDF.Variable, value: RDF.Term) => Bindings;
+  set: (key: RDF.Variable | string, value: RDF.Term) => Bindings;
   /**
    * Create a new Bindings object by removing the given variable.
    *
    * If the variable does not exist in the binding, a copy of the Bindings object is returned.
    *
-   * @param key The variable key.
+   * @param key The variable key term or string. If it is a string, no `?` prefix must be given.
    */
-  delete: (key: RDF.Variable) => Bindings;
+  delete: (key: RDF.Variable | string) => Bindings;
   /**
    * Obtain all variables for which mappings exist.
    */
