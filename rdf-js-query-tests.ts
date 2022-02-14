@@ -80,7 +80,7 @@ async function test_stringsparqlqueryable() {
 }
 
 async function test_algebrasparqlqueryable() {
-    interface AlgebraType { mock: 'algebra' };
+    interface AlgebraType { mock: 'algebra' }
     const engine: AlgebraSparqlQueryable<AlgebraType, SparqlResultSupport> = <any> {};
 
     const bindings: ResultStream<Bindings> = await engine.queryBindings({ mock: 'algebra' });
@@ -104,7 +104,7 @@ async function test_stringsparqlqueryable_partial() {
 }
 
 async function test_algebrasparqlqueryable_partial() {
-    interface AlgebraType { mock: 'algebra' };
+    interface AlgebraType { mock: 'algebra' }
     const engine: AlgebraSparqlQueryable<AlgebraType, BindingsResultSupport & QuadsResultSupport> = <any> {};
 
     const bindings: ResultStream<Bindings> = await engine.queryBindings({ mock: 'algebra' });
