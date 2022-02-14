@@ -85,7 +85,7 @@ export interface StringQueryable<
   QueryStringContextType extends QueryStringContext = QueryStringContext,
 > {
   /**
-   * Initiate a given query.
+   * Initiate a given query provided as a string.
    *
    * This will produce a future to a query result, which has to be executed to obtain the query results.
    *
@@ -107,7 +107,7 @@ export interface StringQueryable<
  QueryAlgebraContextType extends QueryAlgebraContext = QueryAlgebraContext,
 > {
  /**
-  * Initiate a given query.
+  * Initiate a given query provided as an Algebra object.
   *
   * This will produce a future to a query result, which has to be executed to obtain the query results.
   *
@@ -119,7 +119,7 @@ export interface StringQueryable<
 }
 
 /**
- * SPARQL-constrained query interface.
+ * SPARQL-constrained query interface for queries provided as strings.
  *
  * This interface guarantees that result objects are of the expected type as defined by the SPARQL spec.
  */
@@ -139,7 +139,7 @@ export type StringSparqlQueryable<SupportedResultType, QueryStringContextType ex
 ;
 
 /**
- * SPARQL-constrainted query interface.
+ * SPARQL-constrainted query interface for queries provided as Algebra objects.
  *
  * This interface guarantees that result objects are of the expected type as defined by the SPARQL spec.
  */
