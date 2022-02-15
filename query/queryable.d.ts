@@ -5,13 +5,9 @@ import * as RDF from '../data-model';
 import { Bindings, Query, ResultStream } from './common';
 
 /**
- * Context objects provide a way to pass additional bits information to the query engine when executing a query.
+ * Context properties provide a way to pass additional bits information to the query engine when executing a query.
  */
-export interface QueryContext<SourceType> {
-  /**
-   * An array of data sources the query engine must use.
-   */
-  sources?: [SourceType, ...SourceType[]];
+export interface QueryContext {
   /**
    * The date that should be used by SPARQL operations such as NOW().
    */
@@ -23,9 +19,9 @@ export interface QueryContext<SourceType> {
 }
 
 /**
- * Context object in the case the passed query is a string.
+ * Context properties in the case the passed query is a string.
  */
-export interface QueryStringContext<SourceType> extends QueryContext<SourceType> {
+export interface QueryStringContext extends QueryContext {
   /**
    * The format in which the query string is defined.
    * Defaults to { language: 'sparql', version: '1.1' }
@@ -38,9 +34,19 @@ export interface QueryStringContext<SourceType> extends QueryContext<SourceType>
 }
 
 /**
- * Context object in the case the passed query is an algebra object.
+ * Context properties in the case the passed query is an algebra object.
  */
-export type QueryAlgebraContext<SourceType> = QueryContext<SourceType>;
+export type QueryAlgebraContext = QueryContext;
+
+/**
+ * Context properties for engines that can query upon dynamic sets of sources.
+ */
+export interface QuerySourceContext<SourceType> {
+  /**
+   * An array of data sources the query engine must use.
+   */
+  sources: [SourceType, ...SourceType[]];
+}
 
 /**
  * Represents a specific query format
@@ -62,32 +68,17 @@ export interface QueryFormat {
 }
 
 /**
- * Placeholder to represent SPARQL Algebra trees.
- * Algebra typings are TBD. Reference implementations include:
- * - https://www.npmjs.com/package/sparqlalgebrajs
- */
-export type Algebra = any;
-
-/**
  * Generic query engine interfaces.
- * It allow engines to return any type of result object for any type of query.
- * @param QueryFormatTypesAvailable The format of the query, either string or algebra object.
- * @param SourceType The allowed sources over which queries can be executed.
+ * It allow engines to return any type of result object for string queries.
  * @param SupportedMetadataType The allowed metadata types.
- * @param QueryType The allowed query types.
  * @param QueryStringContextType Type of the string-based query context.
- * @param QueryAlgebraContextType Type of the algebra-based query context.
  */
-export interface Queryable<
-  QueryFormatTypesAvailable extends string | Algebra,
-  SourceType,
+export interface StringQueryable<
   SupportedMetadataType,
-  QueryType extends Query<SupportedMetadataType>,
-  QueryStringContextType extends QueryStringContext<SourceType>,
-  QueryAlgebraContextType extends QueryAlgebraContext<SourceType>,
+  QueryStringContextType extends QueryStringContext = QueryStringContext,
 > {
   /**
-   * Initiate a given query.
+   * Initiate a given query provided as a string.
    *
    * This will produce a future to a query result, which has to be executed to obtain the query results.
    *
@@ -95,49 +86,72 @@ export interface Queryable<
    *
    * @see Query
    */
-  query<QueryFormatType extends QueryFormatTypesAvailable>(
-    query: QueryFormatType,
-    context?: QueryFormatType extends string ? QueryStringContextType : QueryAlgebraContextType,
-  ): Promise<QueryType>;
+  query(query: string, context?: QueryStringContextType): Promise<Query<SupportedMetadataType>>;
 }
 
 /**
- * SPARQL-constrained query interface.
+ * Generic query engine interfaces.
+ * It allow engines to return any type of result object for Algebra queries.
+ * @param AlgebraType The supported algebra types.
+ * @param SupportedMetadataType The allowed metadata types.
+ * @param QueryStringContextType Type of the algebra-based query context.
+ */
+ export interface AlgebraQueryable<
+ AlgebraType,
+ SupportedMetadataType,
+ QueryAlgebraContextType extends QueryAlgebraContext = QueryAlgebraContext,
+> {
+ /**
+  * Initiate a given query provided as an Algebra object.
+  *
+  * This will produce a future to a query result, which has to be executed to obtain the query results.
+  *
+  * This can reject given an unsupported or invalid query.
+  *
+  * @see Query
+  */
+ query(query: AlgebraType, context?: QueryAlgebraContextType): Promise<Query<SupportedMetadataType>>;
+}
+
+/**
+ * SPARQL-constrained query interface for queries provided as strings.
  *
  * This interface guarantees that result objects are of the expected type as defined by the SPARQL spec.
  */
-export type SparqlQueryable<
-  QueryFormatTypesAvailable extends string | Algebra,
-  SourceType,
-  QueryStringContextType extends QueryStringContext<SourceType>,
-  QueryAlgebraContextType extends QueryAlgebraContext<SourceType>,
-  SupportedResultType,
-> = unknown
+export type StringSparqlQueryable<SupportedResultType, QueryStringContextType extends QueryStringContext = QueryStringContext> = unknown
   & (SupportedResultType extends BindingsResultSupport ? {
-  queryBindings<QueryFormatType extends QueryFormatTypesAvailable>(
-    query: QueryFormatType,
-    context?: QueryFormatType extends string ? QueryStringContextType : QueryAlgebraContextType,
-  ): Promise<ResultStream<Bindings>>;
+  queryBindings(query: string, context?: QueryStringContextType): Promise<ResultStream<Bindings>>;
 } : unknown)
   & (SupportedResultType extends BooleanResultSupport ? {
-  queryBoolean<QueryFormatType extends QueryFormatTypesAvailable>(
-    query: QueryFormatType,
-    context?: QueryFormatType extends string ? QueryStringContextType : QueryAlgebraContextType,
-  ): Promise<boolean>;
+  queryBoolean(query: string, context?: QueryStringContextType): Promise<boolean>;
 } : unknown)
   & (SupportedResultType extends QuadsResultSupport ? {
-  queryQuads<QueryFormatType extends QueryFormatTypesAvailable>(
-    query: QueryFormatType,
-    context?: QueryFormatType extends string ? QueryStringContextType : QueryAlgebraContextType,
-  ): Promise<ResultStream<RDF.Quad>>;
+  queryQuads(query: string, context?: QueryStringContextType): Promise<ResultStream<RDF.Quad>>;
 } : unknown)
   & (SupportedResultType extends VoidResultSupport ? {
-  queryVoid<QueryFormatType extends QueryFormatTypesAvailable>(
-    query: QueryFormatType,
-    context?: QueryFormatType extends string ? QueryStringContextType : QueryAlgebraContextType,
-  ): Promise<void>;
+  queryVoid(query: string, context?: QueryStringContextType): Promise<void>;
 } : unknown)
-  ;
+;
+
+/**
+ * SPARQL-constrainted query interface for queries provided as Algebra objects.
+ *
+ * This interface guarantees that result objects are of the expected type as defined by the SPARQL spec.
+ */
+ export type AlgebraSparqlQueryable<AlgebraType, SupportedResultType, QueryAlgebraContextType extends QueryAlgebraContext = QueryAlgebraContext> = unknown
+ & (SupportedResultType extends BindingsResultSupport ? {
+ queryBindings(query: AlgebraType, context?: QueryAlgebraContextType): Promise<ResultStream<Bindings>>;
+} : unknown)
+ & (SupportedResultType extends BooleanResultSupport ? {
+ queryBoolean(query: AlgebraType, context?: QueryAlgebraContextType): Promise<boolean>;
+} : unknown)
+ & (SupportedResultType extends QuadsResultSupport ? {
+ queryQuads(query: AlgebraType, context?: QueryAlgebraContextType): Promise<ResultStream<RDF.Quad>>;
+} : unknown)
+ & (SupportedResultType extends VoidResultSupport ? {
+ queryVoid(query: AlgebraType, context?: QueryAlgebraContextType): Promise<void>;
+} : unknown)
+;
 
 export type SparqlResultSupport = BindingsResultSupport & VoidResultSupport & QuadsResultSupport & BooleanResultSupport;
 export type BindingsResultSupport = { bindings: true };

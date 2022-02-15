@@ -4,12 +4,21 @@ import {
     BindingsFactory,
     Bindings,
     Term,
-    Queryable,
+    StringQueryable,
+    AlgebraQueryable,
     SparqlResultSupport,
     MetadataOpts,
     QueryStringContext,
     QueryAlgebraContext,
-    AllMetadataSupport, Query, Variable, ResultStream, Quad, SparqlQueryable, BindingsResultSupport, QuadsResultSupport
+    AllMetadataSupport, 
+    Query, 
+    Variable, 
+    ResultStream, 
+    Quad, 
+    StringSparqlQueryable, 
+    AlgebraSparqlQueryable, 
+    BindingsResultSupport, 
+    QuadsResultSupport,
 } from ".";
 
 function test_bindings() {
@@ -38,8 +47,8 @@ function test_bindings() {
     }
 }
 
-async function test_queryable() {
-    const engine: Queryable<string, string, AllMetadataSupport, Query<SparqlResultSupport>, QueryStringContext<string>, QueryAlgebraContext<string>> = <any> {};
+async function test_stringqueryable() {
+    const engine: StringQueryable<AllMetadataSupport, QueryAlgebraContext> = <any> {};
 
     const query: Query<SparqlResultSupport> = await engine.query('SELECT * WHERE { ... }');
     switch (query.resultType) {
@@ -61,8 +70,8 @@ async function test_queryable() {
     }
 }
 
-async function test_sparqlqueryable() {
-    const engine: SparqlQueryable<string, string, QueryStringContext<string>, QueryAlgebraContext<string>, SparqlResultSupport> = <any> {};
+async function test_stringsparqlqueryable() {
+    const engine: StringSparqlQueryable<SparqlResultSupport> = <any> {};
 
     const bindings: ResultStream<Bindings> = await engine.queryBindings('SELECT * WHERE { ... }');
     const quads: ResultStream<Quad> = await engine.queryQuads('CONSTRUCT WHERE { ... }');
@@ -70,8 +79,21 @@ async function test_sparqlqueryable() {
     const done: void = await engine.queryVoid('INSERT WHERE { ... }');
 }
 
-async function test_sparqlqueryable_partial() {
-    const engine: SparqlQueryable<string, string, QueryStringContext<string>, QueryAlgebraContext<string>, BindingsResultSupport & QuadsResultSupport> = <any> {};
+async function test_algebrasparqlqueryable() {
+    interface AlgebraType { mock: 'algebra' }
+    const engine: AlgebraSparqlQueryable<AlgebraType, SparqlResultSupport> = <any> {};
+
+    const bindings: ResultStream<Bindings> = await engine.queryBindings({ mock: 'algebra' });
+    const quads: ResultStream<Quad> = await engine.queryQuads({ mock: 'algebra' });
+    const bool: boolean = await engine.queryBoolean({ mock: 'algebra' });
+    const done: void = await engine.queryVoid({ mock: 'algebra' });
+
+    // @ts-ignore
+    await engine.queryBoolean('ASK WHERE { ... }'); // Query type doesn't match AlgebraType
+}
+
+async function test_stringsparqlqueryable_partial() {
+    const engine: StringSparqlQueryable<BindingsResultSupport & QuadsResultSupport> = <any> {};
 
     const bindings: ResultStream<Bindings> = await engine.queryBindings('SELECT * WHERE { ... }');
     const quads: ResultStream<Quad> = await engine.queryQuads('CONSTRUCT WHERE { ... }');
@@ -79,4 +101,16 @@ async function test_sparqlqueryable_partial() {
     const bool: boolean = await engine.queryBoolean('ASK WHERE { ... }'); // Unsupported
     // @ts-ignore
     const done: void = await engine.queryVoid('INSERT WHERE { ... }'); // Unsupported
+}
+
+async function test_algebrasparqlqueryable_partial() {
+    interface AlgebraType { mock: 'algebra' }
+    const engine: AlgebraSparqlQueryable<AlgebraType, BindingsResultSupport & QuadsResultSupport> = <any> {};
+
+    const bindings: ResultStream<Bindings> = await engine.queryBindings({ mock: 'algebra' });
+    const quads: ResultStream<Quad> = await engine.queryQuads({ mock: 'algebra' });
+    // @ts-ignore
+    const bool: boolean = await engine.queryBoolean({ mock: 'algebra' }); // Unsupported
+    // @ts-ignore
+    const done: void = await engine.queryVoid({ mock: 'algebra' }); // Unsupported
 }
