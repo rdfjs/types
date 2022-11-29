@@ -233,8 +233,12 @@ export interface Quad extends BaseQuad {
     equals(other: Term | null | undefined): boolean;
 }
 
-export type BaseTriple = Omit<BaseQuad, 'graph'>
-export type Triple = Omit<Quad, 'graph'>
+export interface BaseTriple extends Omit<BaseQuad, 'graph' | 'termType'> {
+    termType: 'QuotedTriple';
+}
+export interface Triple extends Omit<Quad, 'graph' | 'termType'> {
+    termType: 'QuotedTriple';
+}
 
 /**
  * A factory for instantiating RDF terms and quads.
@@ -289,5 +293,5 @@ export interface DataFactory<OutQuad extends BaseQuad = Quad, InQuad extends Bas
      * @return A new instance of Quad.
      * @see Quad
      */
-    quad(subject: InQuad['subject'], predicate: InQuad['predicate'], object: InQuad['object'], graph?: InQuad['graph']): OutQuad;
+    quad(subject: InQuad['subject'] | InQuad, predicate: InQuad['predicate'], object: InQuad['object'] | InQuad, graph?: InQuad['graph']): OutQuad;
 }

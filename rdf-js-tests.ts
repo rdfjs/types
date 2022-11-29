@@ -60,6 +60,9 @@ function test_terms() {
         case 'Quad':
             const itIsQuad: BaseQuad = term;
             break;
+        case 'QuotedTriple':
+            const itIsTriple: BaseTriple = term;
+            break;
         case 'NamedNode':
             const itIsNamedNode: NamedNode = term;
             break;
@@ -135,7 +138,7 @@ function test_datafactory_star() {
     );
 
     // Decompose the triple
-    if (quadBobAgeCertainty.subject.termType === 'Quad') {
+    if (quadBobAgeCertainty.subject.termType === 'QuotedTriple') {
         const quadBobAge2: Triple = quadBobAgeCertainty.subject;
 
         const equalToSelf: boolean = quadBobAge2.equals(quadBobAge);
@@ -163,7 +166,7 @@ function test_datafactory_star_basequad() {
     );
 
     // Decompose the triple
-    if (quadBobAgeCertainty.subject.termType === 'Quad') {
+    if (quadBobAgeCertainty.subject.termType === 'QuotedTriple') {
         const quadBobAge2: BaseTriple = quadBobAgeCertainty.subject;
 
         const equalToSelf: boolean = quadBobAge2.equals(quadBobAge);
