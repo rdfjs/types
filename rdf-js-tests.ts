@@ -120,7 +120,7 @@ function test_datafactory_star() {
         const notEqualToOtherType: boolean = quadBobAge2.equals(dataFactory.namedNode('ex:something:else'));
 
         const dataset: DatasetCore = <any> {};
-        // @ts-expect-error
+        // @ts-expect-error: triple is not assignable to quad. It has no graph property
         dataset.add(quadBobAge2);
     }
 }
@@ -148,7 +148,7 @@ function test_datafactory_star_basequad() {
         const notEqualToOtherType: boolean = quadBobAge2.equals(dataFactory.namedNode('ex:something:else'));
 
         const dataset: DatasetCore<BaseQuad> = <any> {};
-        // @ts-expect-error
+        // @ts-expect-error: triple is not assignable to quad. It has no graph property
         dataset.add(quadBobAge2);
     }
 }
