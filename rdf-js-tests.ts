@@ -54,6 +54,28 @@ function test_terms() {
     let defaultGraphEqual: boolean = defaultGraph.equals(someTerm);
     defaultGraphEqual = defaultGraph.equals(null);
     defaultGraphEqual = defaultGraph.equals(undefined);
+
+    const term: Term = <any> {};
+    switch (term.termType) {
+        case 'Quad':
+            const itIsQuad: BaseQuad = term;
+            break;
+        case 'NamedNode':
+            const itIsNamedNode: NamedNode = term;
+            break;
+        case 'Literal':
+            const itIsLiteral: Literal = term;
+            break;
+        case 'BlankNode':
+            const itIsBlankNode: BlankNode = term;
+            break;
+        case 'Variable':
+            const itIsVariable: Variable = term;
+            break;
+        case 'DefaultGraph':
+            const itIsDefaultGraph: DefaultGraph = term;
+            break;
+    }
 }
 
 function test_quads() {
