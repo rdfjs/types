@@ -56,27 +56,28 @@ function test_terms() {
     defaultGraphEqual = defaultGraph.equals(undefined);
 
     const term: Term = <any> {};
+    let term2: Term | undefined
     switch (term.termType) {
         case 'Quad':
-            const itIsQuad: BaseQuad = term;
+            term2 = <BaseQuad>term;
             break;
         case 'QuotedTriple':
-            const itIsTriple: BaseTriple = term;
+            term2 = <BaseTriple>term;
             break;
         case 'NamedNode':
-            const itIsNamedNode: NamedNode = term;
+            term2 = <NamedNode>term;
             break;
         case 'Literal':
-            const itIsLiteral: Literal = term;
+            term2 = <Literal>term;
             break;
         case 'BlankNode':
-            const itIsBlankNode: BlankNode = term;
+            term2 = <BlankNode>term;
             break;
         case 'Variable':
-            const itIsVariable: Variable = term;
+            term2 = <Variable>term;
             break;
         case 'DefaultGraph':
-            const itIsDefaultGraph: DefaultGraph = term;
+            term2 = <DefaultGraph>term;
             break;
     }
 }
