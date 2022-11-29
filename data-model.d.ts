@@ -10,7 +10,7 @@
  * @see DefaultGraph
  * @see BaseQuad
  */
-export type Term = NamedNode | BlankNode | Literal | Variable | DefaultGraph | BaseQuad;
+export type Term = NamedNode | BlankNode | Literal | Variable | DefaultGraph | BaseQuad | Triple;
 
 /**
  * Contains an IRI.
@@ -128,12 +128,12 @@ export interface DefaultGraph {
 }
 
 /**
- * The subject, which is a NamedNode, BlankNode or Variable.
+ * The subject, which is a NamedNode, BlankNode, Variable, or a quoted triple.
  * @see NamedNode
  * @see BlankNode
  * @see Variable
  */
-export type Quad_Subject = NamedNode | BlankNode | Quad | Variable;
+export type Quad_Subject = NamedNode | BlankNode | Triple | Variable;
 
 /**
  * The predicate, which is a NamedNode or Variable.
@@ -143,13 +143,13 @@ export type Quad_Subject = NamedNode | BlankNode | Quad | Variable;
 export type Quad_Predicate = NamedNode | Variable;
 
 /**
- * The object, which is a NamedNode, Literal, BlankNode or Variable.
+ * The object, which is a NamedNode, Literal, BlankNode, Variable, or a quoted triple.
  * @see NamedNode
  * @see Literal
  * @see BlankNode
  * @see Variable
  */
-export type Quad_Object = NamedNode | Literal | BlankNode | Quad | Variable;
+export type Quad_Object = NamedNode | Literal | BlankNode | Triple | Variable;
 
 /**
  * The named graph, which is a DefaultGraph, NamedNode, BlankNode or Variable.
@@ -232,6 +232,9 @@ export interface Quad extends BaseQuad {
      */
     equals(other: Term | null | undefined): boolean;
 }
+
+export type BaseTriple = Omit<BaseQuad, 'graph'>
+export type Triple = Omit<Quad, 'graph'>
 
 /**
  * A factory for instantiating RDF terms and quads.

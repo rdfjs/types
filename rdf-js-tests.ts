@@ -1,5 +1,5 @@
 import { BlankNode, DataFactory, Dataset, DatasetCore, DatasetCoreFactory, DatasetFactory, DefaultGraph, Literal,
-  NamedNode, Quad, BaseQuad, Sink, Source, Store, Stream, Term, Variable, Quad_Graph } from ".";
+  NamedNode, Quad, BaseQuad, Sink, Source, Store, Stream, Term, Variable, Quad_Graph, Triple, BaseTriple } from ".";
 import { EventEmitter } from "events";
 
 function test_terms() {
@@ -114,10 +114,14 @@ function test_datafactory_star() {
 
     // Decompose the triple
     if (quadBobAgeCertainty.subject.termType === 'Quad') {
-        const quadBobAge2: Quad = quadBobAgeCertainty.subject;
+        const quadBobAge2: Triple = quadBobAgeCertainty.subject;
 
         const equalToSelf: boolean = quadBobAge2.equals(quadBobAge);
         const notEqualToOtherType: boolean = quadBobAge2.equals(dataFactory.namedNode('ex:something:else'));
+
+        const dataset: DatasetCore = <any> {};
+        // @ts-expect-error
+        dataset.add(quadBobAge2);
     }
 }
 
@@ -138,10 +142,14 @@ function test_datafactory_star_basequad() {
 
     // Decompose the triple
     if (quadBobAgeCertainty.subject.termType === 'Quad') {
-        const quadBobAge2: BaseQuad = quadBobAgeCertainty.subject;
+        const quadBobAge2: BaseTriple = quadBobAgeCertainty.subject;
 
         const equalToSelf: boolean = quadBobAge2.equals(quadBobAge);
         const notEqualToOtherType: boolean = quadBobAge2.equals(dataFactory.namedNode('ex:something:else'));
+
+        const dataset: DatasetCore<BaseQuad> = <any> {};
+        // @ts-expect-error
+        dataset.add(quadBobAge2);
     }
 }
 
