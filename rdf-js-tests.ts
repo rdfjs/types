@@ -36,7 +36,7 @@ function test_terms() {
     const termType3: string = literal.termType;
     const value3: string = literal.value;
     const language3: string = literal.language;
-    const dir3: 'ltr' | 'rtl' | '' | undefined = literal.direction;
+    const dir3: 'ltr' | 'rtl' | '' | null | undefined = literal.direction;
     const datatype3: NamedNode = literal.datatype;
     let literalEqual: boolean = literal.equals(someTerm);
     literalEqual = literal.equals(null);

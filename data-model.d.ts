@@ -76,7 +76,7 @@ export interface Literal {
     /**
      * the direction of the language-tagged string.
      */
-    direction?: 'ltr' | 'rtl' | '';
+    direction?: 'ltr' | 'rtl' | '' | null;
     /**
      * A NamedNode whose IRI represents the datatype of the literal.
      */
@@ -298,5 +298,5 @@ export interface DataFactory<OutQuad extends BaseQuad = Quad, InQuad extends Bas
 
 export interface DirectionalLanguage {
     language: string;
-    direction?: 'ltr' | 'rtl' | '';
+    direction?: 'ltr' | 'rtl' | '' | null;
 }
