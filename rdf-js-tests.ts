@@ -36,6 +36,7 @@ function test_terms() {
     const termType3: string = literal.termType;
     const value3: string = literal.value;
     const language3: string = literal.language;
+    const dir3: 'ltr' | 'rtl' | '' | undefined = literal.direction;
     const datatype3: NamedNode = literal.datatype;
     let literalEqual: boolean = literal.equals(someTerm);
     literalEqual = literal.equals(null);
@@ -81,6 +82,12 @@ function test_datafactory() {
     const literal1: Literal = dataFactory.literal('abc');
     const literal2: Literal = dataFactory.literal('abc', 'en-us');
     const literal3: Literal = dataFactory.literal('abc', namedNode);
+    const literal4: Literal = dataFactory.literal('abc', { language: 'en-us' });
+    const literal5: Literal = dataFactory.literal('abc', { language: 'en-us', direction: 'ltr' });
+    const literal6: Literal = dataFactory.literal('abc', { language: 'en-us', direction: 'rtl' });
+    const literal7: Literal = dataFactory.literal('abc', { language: 'en-us', direction: '' });
+    // @ts-expect-error
+    const literal8: Literal = dataFactory.literal('abc', { language: 'en-us', direction: 'wrong' });
 
     const variable: Variable = dataFactory.variable ? dataFactory.variable('v1') : <any> {};
 

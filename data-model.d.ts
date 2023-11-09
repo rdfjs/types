@@ -74,6 +74,10 @@ export interface Literal {
      */
     language: string;
     /**
+     * the direction of the language-tagged string.
+     */
+    direction?: 'ltr' | 'rtl' | '';
+    /**
      * A NamedNode whose IRI represents the datatype of the literal.
      */
     datatype: NamedNode;
@@ -81,7 +85,7 @@ export interface Literal {
     /**
      * @param other The term to compare with.
      * @return True if and only if other has termType "Literal"
-     *                   and the same `value`, `language`, and `datatype`.
+     *                   and the same `value`, `language`, `direction`, and `datatype`.
      */
     equals(other: Term | null | undefined): boolean;
 }
@@ -254,16 +258,19 @@ export interface DataFactory<OutQuad extends BaseQuad = Quad, InQuad extends Bas
     blankNode(value?: string): BlankNode;
 
     /**
-     * @param                 value              The literal value.
-     * @param languageOrDatatype The optional language or datatype.
-     *                                                    If `languageOrDatatype` is a NamedNode,
-     *                                                    then it is used for the value of `NamedNode.datatype`.
-     *                                                    Otherwise `languageOrDatatype` is used for the value
-     *                                                    of `NamedNode.language`.
+     * @param value              The literal value.
+     * @param languageOrDatatype The optional language, datatype, or directional language.
+     *                           If `languageOrDatatype` is a NamedNode,
+     *                           then it is used for the value of `NamedNode.datatype`.
+     *                           If `languageOrDatatype` is a NamedNode, it is used for the value
+     *                           of `NamedNode.language`.
+     *                           Otherwise, it is used as a directional language,
+     *                           from which the language is set to `languageOrDatatype.language`
+     *                           and the direction to `languageOrDatatype.direction`.
      * @return A new instance of Literal.
      * @see Literal
      */
-    literal(value: string, languageOrDatatype?: string | NamedNode): Literal;
+    literal(value: string, languageOrDatatype?: string | NamedNode | DirectionalLanguage): Literal;
 
     /**
      * This method is optional.
@@ -287,4 +294,9 @@ export interface DataFactory<OutQuad extends BaseQuad = Quad, InQuad extends Bas
      * @see Quad
      */
     quad(subject: InQuad['subject'], predicate: InQuad['predicate'], object: InQuad['object'], graph?: InQuad['graph']): OutQuad;
+}
+
+export interface DirectionalLanguage {
+    language: string;
+    direction?: 'ltr' | 'rtl' | '';
 }
