@@ -1,5 +1,5 @@
 import { BlankNode, DataFactory, Dataset, DatasetCore, DatasetCoreFactory, DatasetFactory, DefaultGraph, Literal,
-  NamedNode, Quad, BaseQuad, Sink, Source, Store, Stream, Term, Variable, Quad_Graph } from ".";
+  NamedNode, Quad, BaseQuad, Sink, Source, Store, Stream, Term, Variable, Quad_Graph, Triple, BaseTriple } from ".";
 import { EventEmitter } from "events";
 
 function test_terms() {
@@ -54,6 +54,32 @@ function test_terms() {
     let defaultGraphEqual: boolean = defaultGraph.equals(someTerm);
     defaultGraphEqual = defaultGraph.equals(null);
     defaultGraphEqual = defaultGraph.equals(undefined);
+
+    const term: Term = <any> {};
+    let term2: Term | undefined
+    switch (term.termType) {
+        case 'Quad':
+            term2 = <BaseQuad>term;
+            break;
+        case 'QuotedTriple':
+            term2 = <BaseTriple>term;
+            break;
+        case 'NamedNode':
+            term2 = <NamedNode>term;
+            break;
+        case 'Literal':
+            term2 = <Literal>term;
+            break;
+        case 'BlankNode':
+            term2 = <BlankNode>term;
+            break;
+        case 'Variable':
+            term2 = <Variable>term;
+            break;
+        case 'DefaultGraph':
+            term2 = <DefaultGraph>term;
+            break;
+    }
 }
 
 function test_quads() {
@@ -113,11 +139,15 @@ function test_datafactory_star() {
     );
 
     // Decompose the triple
-    if (quadBobAgeCertainty.subject.termType === 'Quad') {
-        const quadBobAge2: Quad = quadBobAgeCertainty.subject;
+    if (quadBobAgeCertainty.subject.termType === 'QuotedTriple') {
+        const quadBobAge2: Triple = quadBobAgeCertainty.subject;
 
         const equalToSelf: boolean = quadBobAge2.equals(quadBobAge);
         const notEqualToOtherType: boolean = quadBobAge2.equals(dataFactory.namedNode('ex:something:else'));
+
+        const dataset: DatasetCore = <any> {};
+        // @ts-expect-error: triple is not assignable to quad. It has no graph property
+        dataset.add(quadBobAge2);
     }
 }
 
@@ -137,11 +167,15 @@ function test_datafactory_star_basequad() {
     );
 
     // Decompose the triple
-    if (quadBobAgeCertainty.subject.termType === 'Quad') {
-        const quadBobAge2: BaseQuad = quadBobAgeCertainty.subject;
+    if (quadBobAgeCertainty.subject.termType === 'QuotedTriple') {
+        const quadBobAge2: BaseTriple = quadBobAgeCertainty.subject;
 
         const equalToSelf: boolean = quadBobAge2.equals(quadBobAge);
         const notEqualToOtherType: boolean = quadBobAge2.equals(dataFactory.namedNode('ex:something:else'));
+
+        const dataset: DatasetCore<BaseQuad> = <any> {};
+        // @ts-expect-error: triple is not assignable to quad. It has no graph property
+        dataset.add(quadBobAge2);
     }
 }
 
