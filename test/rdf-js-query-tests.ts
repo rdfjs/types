@@ -14,12 +14,12 @@ import {
     Query, 
     Variable, 
     ResultStream, 
-    Quad, 
+    Quad,
     StringSparqlQueryable, 
     AlgebraSparqlQueryable, 
     BindingsResultSupport, 
     QuadsResultSupport,
-} from ".";
+} from "..";
 
 function test_bindings() {
     const df: DataFactory = <any> {};

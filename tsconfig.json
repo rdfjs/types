@@ -1,22 +1,18 @@
 {
     "compilerOptions": {
-        "module": "commonjs",
+        "outDir": "dist",
+        "target": "ES2022",
         "lib": [
-            "es6"
+            "ES2022",
+            "DOM"
         ],
+        "module": "ES2022",
+        "moduleResolution": "node",
         "strict": true,
-        "noImplicitReturns": true,
-        "noImplicitAny": true,
-        "noImplicitThis": true,
-        "strictNullChecks": true,
-        "strictFunctionTypes": true,
-        "noEmit": true,
-        "forceConsistentCasingInFileNames": true,
-        "downlevelIteration": true
+        "emitDeclarationOnly": true,
+        "declaration": true,
     },
-    "files": [
-        "index.d.ts",
-        "rdf-js-tests.ts",
-        "rdf-js-query-tests.ts"
+    "include": [
+        "src/index.ts"
     ]
 }

@@ -1,0 +1,13 @@
+{
+    "extends": "../tsconfig.json",
+    "compilerOptions": {
+      "module": "es2022",
+      "moduleResolution": "node",
+      "emitDeclarationOnly": false,
+      "noEmit": true,
+    },
+    "include": [
+      "."
+    ]
+  }
+  

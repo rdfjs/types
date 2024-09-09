@@ -1,5 +1,11 @@
 # @rdfjs/types
 
+## 1.1.1
+
+### Patch Changes
+
+- Ensure only needed files are packaged
+
 ## 1.1.0
 
 ### Minor Changes
