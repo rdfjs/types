@@ -287,4 +287,18 @@ export interface DataFactory<OutQuad extends BaseQuad = Quad, InQuad extends Bas
      * @see Quad
      */
     quad(subject: InQuad['subject'], predicate: InQuad['predicate'], object: InQuad['object'], graph?: InQuad['graph']): OutQuad;
+
+    /**
+     * @param original The original term.
+     * @return A new instance of the term such that newTermInstance.equals(original) returns true.
+     * @see Term
+     */
+    fromTerm(original: Term): Term;
+
+    /**
+     * @param original The original quad.
+     * @return A new instance of the quad such that newQuadInstance.equals(original) returns true.
+     * @see Quad
+     */
+    fromQuad(original: InQuad): OutQuad;
 }
