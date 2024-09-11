@@ -1,11 +1,5 @@
 # @rdfjs/types
 
-## 2.0.0
-
-### Major Changes
-
-- Add missing methods to DataFactory interface
-
 ## 1.1.1
 
 ### Patch Changes
