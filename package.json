@@ -1,9 +1,11 @@
 {
   "name": "@rdfjs/types",
-  "version": "1.1.0",
+  "version": "1.1.1",
   "license": "MIT",
   "types": "index.d.ts",
-  "files": [ "./**/*.d.ts" ],
+  "files": [
+    "./**/*.d.ts"
+  ],
   "author": {
     "name": "RDF/JS Representation Task Force",
     "url": "https://github.com/rdfjs/representation-task-force",
