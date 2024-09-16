@@ -166,9 +166,20 @@ function test_datafactory_star_basequad() {
         const notEqualToOtherType: boolean = quadBobAge2.equals(dataFactory.namedNode('ex:something:else'));
     }
 
-    const baseQuadTerm: Quad = dataFactory.fromTerm(quadBobAge);
+    const baseQuadTerm: BaseQuad = dataFactory.fromTerm(quadBobAge);
 
     const baseQuad: BaseQuad = dataFactory.fromQuad(quadBobAge);
+
+    // Test with regular Quad
+    const quadDataFactory: DataFactory<Quad> = <any> {};
+
+    const regularQuadBobAge: Quad = quadDataFactory.quad(
+        dataFactory.namedNode('ex:bob'),
+        dataFactory.namedNode('ex:age'),
+        dataFactory.literal('23'),
+    );
+
+    const quadTerm: Quad = quadDataFactory.fromTerm(regularQuadBobAge);
 }
 
 function test_stream() {
