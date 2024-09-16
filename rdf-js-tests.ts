@@ -86,11 +86,16 @@ function test_datafactory() {
 
     const defaultGraph: DefaultGraph = dataFactory.defaultGraph();
 
-    const term1: Term = dataFactory.fromTerm(dataFactory.namedNode(""));
-    const term2: Term = dataFactory.fromTerm(dataFactory.blankNode());
-    const term3: Term = dataFactory.fromTerm(dataFactory.literal(""));
-    const term4: Term = dataFactory.fromTerm(dataFactory.variable ? dataFactory.variable("v1") : <any> {});
-    const term5: Term = dataFactory.fromTerm(dataFactory.defaultGraph());
+    type NamedNodeExt = NamedNode & { someProp: string };
+    const term1: NamedNode = dataFactory.fromTerm(<NamedNodeExt>{});
+    type BlankNodeExt = BlankNode & { someProp: string };
+    const term2: BlankNode = dataFactory.fromTerm(<BlankNodeExt>{});
+    type LiteralExt = Literal & { someProp: string };
+    const term3: Literal = dataFactory.fromTerm(<LiteralExt>{});
+    type VariableExt = Variable & { someProp: string };
+    const term4: Variable = dataFactory.fromTerm(<VariableExt> {});
+    type DefaultGraphExt = DefaultGraph & { someProp: string };
+    const term5: DefaultGraph = dataFactory.fromTerm(<DefaultGraphExt>{});
 
     const quadFromQuad: Term = dataFactory.fromQuad(dataFactory.quad(
         dataFactory.namedNode("x"),
@@ -135,7 +140,7 @@ function test_datafactory_star() {
         const notEqualToOtherType: boolean = quadBobAge2.equals(dataFactory.namedNode('ex:something:else'));
     }
 
-    const quadTerm: Term = dataFactory.fromTerm(quadBobAge);
+    const quadTerm: Quad = dataFactory.fromTerm(quadBobAge);
 }
 
 function test_datafactory_star_basequad() {
@@ -161,7 +166,7 @@ function test_datafactory_star_basequad() {
         const notEqualToOtherType: boolean = quadBobAge2.equals(dataFactory.namedNode('ex:something:else'));
     }
 
-    const baseQuadTerm: Term = dataFactory.fromTerm(quadBobAge);
+    const baseQuadTerm: Quad = dataFactory.fromTerm(quadBobAge);
 
     const baseQuad: BaseQuad = dataFactory.fromQuad(quadBobAge);
 }
