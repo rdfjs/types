@@ -1,17 +1,5 @@
 # @rdfjs/types
 
-## 1.1.1
-
-### Patch Changes
-
-- a631541: Only package declaration files
-
-## 1.1.1
-
-### Patch Changes
-
-- Packaging Fix: Only package declaration files
-
 ## 1.1.0
 
 ### Minor Changes

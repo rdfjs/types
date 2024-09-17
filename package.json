@@ -1,6 +1,6 @@
 {
   "name": "@rdfjs/types",
-  "version": "1.1.1",
+  "version": "1.1.0",
   "license": "MIT",
   "types": "index.d.ts",
   "files": [
@@ -14,7 +14,8 @@
   "scripts": {
     "lint": "eslint . --ext .ts",
     "test": "tsc --noEmit",
-    "release": "changeset publish"
+    "release": "changeset publish",
+    "changeset": "changeset"
   },
   "dependencies": {
     "@types/node": "*"
