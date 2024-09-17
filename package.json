@@ -4,7 +4,7 @@
   "license": "MIT",
   "types": "index.d.ts",
   "files": [
-    "./**/*.d.ts"
+    "**/*.d.ts"
   ],
   "author": {
     "name": "RDF/JS Representation Task Force",
