@@ -51,7 +51,7 @@ export interface DatasetCoreFactory<OutQuad extends BaseQuad = Quad, InQuad exte
     /**
      * Returns a new dataset and imports all quads, if given.
      */
-    dataset(quads?: InQuad[]): D;
+    dataset(quads?: DatasetCore<InQuad> | InQuad[]): D;
 }
 
 export interface Dataset<OutQuad extends BaseQuad = Quad, InQuad extends BaseQuad = OutQuad> extends DatasetCore<OutQuad, InQuad> {
