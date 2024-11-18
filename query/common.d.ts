@@ -5,9 +5,14 @@ import { EventEmitter } from "events";
 import * as RDF from '../data-model';
 
 /**
+ * Helper union type for triple term names.
+ */
+export type TripleTermName = 'subject' | 'predicate' | 'object';
+
+/**
  * Helper union type for quad term names.
  */
-export type QuadTermName = 'subject' | 'predicate' | 'object' | 'graph';
+export type QuadTermName = TripleTermName | 'graph';
 
 // TODO: merge this with Stream upon the next major change
 /**

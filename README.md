@@ -26,6 +26,14 @@ import type { DatasetCore } from '@rdfjs/types/dataset'
 import type { Stream } from '@rdfjs/types/stream'
 ``````
 
+## Helper Terms
+
+Note that some helper types exist that do not exist within the RDF/JS specifications. These include:
+
+```typescript
+import type { TripleTermName, QuadTermName } from '@rdfjs/types'
+```
+
 ## Contributing
 
 Everyone is invited to open issues and pull requests. When you create a PR, please add or update the `rdf-js-tests.ts` file to reflect your changes.
