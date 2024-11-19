@@ -26,7 +26,7 @@ import type { DatasetCore } from '@rdfjs/types/dataset'
 import type { Stream } from '@rdfjs/types/stream'
 ``````
 
-## Helper Terms
+## Additional Types
 
 Note that some helper types exist that do not exist within the RDF/JS specifications. These include:
 
