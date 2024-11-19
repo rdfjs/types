@@ -1,6 +1,18 @@
 /* Data Model Interfaces */
 /* https://rdf.js.org/data-model-spec/ */
 
+/* RDF Modes allow for future expansion into other modes, e.g., "easierRDF" */
+
+/* RDF 1.1 */
+export type RdfMode_11 = 'rdf-1.1';
+
+/* RDF* (rdf-star) */
+export type RdfMode_star = 'rdf-star';
+
+/* Modes officially supported/allowed by RDFJS */
+export type AllowedRdfMode = RdfMode_11 | RdfMode_star;
+
+
 /**
  * Contains an Iri, RDF blank Node, RDF literal, variable name, default graph, or a quad
  * @see NamedNode
@@ -58,7 +70,7 @@ export interface BlankNode {
 /**
  * An RDF literal, containing a string with an optional language tag and/or datatype.
  */
-export interface Literal {
+export interface Literal<Datatype extends Role.Datatype=Role.Datatype> {
     /**
      * Contains the constant "Literal".
      */
@@ -76,7 +88,7 @@ export interface Literal {
     /**
      * A NamedNode whose IRI represents the datatype of the literal.
      */
-    datatype: NamedNode;
+    datatype: Datatype;
 
     /**
      * @param other The term to compare with.
@@ -127,38 +139,98 @@ export interface DefaultGraph {
     equals(other: Term | null | undefined): boolean;
 }
 
+
+/**
+ * Type to be unioned with term types for forming role-specific pattern types
+ */
+export type TermPattern = Variable | null;
+
+
+/**
+ * Unions of Term types for the various roles they play in 'plain' RDF 1.1 Data
+ */
+ export namespace Role {
+	export type Subject<
+		RdfMode extends AllowedRdfMode=RdfMode_star,
+	> = NamedNode | BlankNode | (RdfMode extends RdfMode_star? Quad: never);
+
+    export type Predicate<
+        RdfMode extends AllowedRdfMode=RdfMode_star,
+    > = NamedNode;
+
+    export type Object<
+        RdfMode extends AllowedRdfMode=RdfMode_star,
+        LiteralDatatype extends Datatype=Datatype,
+    > = NamedNode | BlankNode | Literal<LiteralDatatype> | (RdfMode extends RdfMode_star? Quad: never);
+
+    export type Graph<
+        RdfMode extends AllowedRdfMode=RdfMode_star,
+    > = DefaultGraph | NamedNode | BlankNode;
+
+    export type Datatype<
+        RdfMode extends AllowedRdfMode=RdfMode_star,
+    > = NamedNode;
+ }
+
+
+/**
+ * Unions of Term types for the various
+ */
+ export namespace Pattern {
+    export type Subject<
+		RdfMode extends AllowedRdfMode=RdfMode_star,
+	> = Role.Subject | TermPattern;
+
+    export type Predicate<
+        RdfMode extends AllowedRdfMode=RdfMode_star,
+    > = Role.Predicate | TermPattern;
+
+    export type Object<
+        RdfMode extends AllowedRdfMode=RdfMode_star,
+        LiteralDatatype extends Datatype=Datatype,
+    > = Role.Object | TermPattern;
+
+    export type Graph<
+        RdfMode extends AllowedRdfMode=RdfMode_star,
+    > = Role.Graph | TermPattern;
+
+    export type Datatype<
+        RdfMode extends AllowedRdfMode=RdfMode_star,
+    > = Role.Datatype | TermPattern;
+ }
+
+
 /**
  * The subject, which is a NamedNode, BlankNode or Variable.
- * @see NamedNode
- * @see BlankNode
- * @see Variable
+ * @deprecated Consider using one of the following types instead: @see Role.Subject or @see Pattern.Subject
  */
-export type Quad_Subject = NamedNode | BlankNode | Quad | Variable;
+export type Quad_Subject<
+    RdfMode extends AllowedRdfMode=RdfMode_star,
+> = Role.Subject<RdfMode> | Variable;
 
-/**
- * The predicate, which is a NamedNode or Variable.
- * @see NamedNode
- * @see Variable
- */
-export type Quad_Predicate = NamedNode | Variable;
-
-/**
- * The object, which is a NamedNode, Literal, BlankNode or Variable.
- * @see NamedNode
- * @see Literal
- * @see BlankNode
- * @see Variable
- */
-export type Quad_Object = NamedNode | Literal | BlankNode | Quad | Variable;
-
-/**
- * The named graph, which is a DefaultGraph, NamedNode, BlankNode or Variable.
- * @see DefaultGraph
- * @see NamedNode
- * @see BlankNode
- * @see Variable
- */
-export type Quad_Graph = DefaultGraph | NamedNode | BlankNode | Variable;
+ /**
+  * The predicate, which is a NamedNode or Variable.
+ * @deprecated Consider using one of the following types instead: @see Role.Predicate or @see Pattern.Predicate
+  */
+export type Quad_Predicate<
+    RdfMode extends AllowedRdfMode=RdfMode_star,
+> = Role.Predicate<RdfMode> | Variable;
+ 
+ /**
+  * The object, which is a NamedNode, Literal, BlankNode or Variable.
+ * @deprecated Consider using one of the following types instead: @see Role.Object or @see Pattern.Object
+  */
+export type Quad_Object<
+    RdfMode extends AllowedRdfMode=RdfMode_star,
+> = Role.Object<RdfMode> | Variable;
+ 
+ /**
+  * The named graph, which is a DefaultGraph, NamedNode, BlankNode or Variable.
+ * @deprecated Consider using one of the following types instead: @see Role.Graph or @see Pattern.Graph
+  */
+export type Quad_Graph<
+    RdfMode extends AllowedRdfMode=RdfMode_star,
+> = Role.Graph<RdfMode> | Variable;
 
 /**
  * An RDF quad, taking any Term in its positions, containing the subject, predicate, object and graph terms.
@@ -175,22 +247,18 @@ export interface BaseQuad {
 
     /**
      * The subject.
-     * @see Quad_Subject
      */
     subject: Term;
     /**
      * The predicate.
-     * @see Quad_Predicate
      */
     predicate: Term;
     /**
      * The object.
-     * @see Quad_Object
      */
     object: Term;
     /**
      * The named graph.
-     * @see Quad_Graph
      */
     graph: Term;
 
@@ -204,33 +272,59 @@ export interface BaseQuad {
 /**
  * An RDF quad, containing the subject, predicate, object and graph terms.
  */
-export interface Quad extends BaseQuad {
+ export interface Quad<
+    RdfMode extends AllowedRdfMode=RdfMode_star,
+    LiteralDataype extends Role.Datatype=Role.Datatype<RdfMode>
+ > extends BaseQuad {
     /**
      * The subject.
      * @see Quad_Subject
      */
-    subject: Quad_Subject;
+    subject: Role.Subject<RdfMode>;
     /**
      * The predicate.
      * @see Quad_Predicate
      */
-    predicate: Quad_Predicate;
+    predicate: Role.Predicate<RdfMode>;
     /**
      * The object.
      * @see Quad_Object
      */
-    object: Quad_Object;
+    object: Role.Object<RdfMode, LiteralDataype>;
     /**
      * The named graph.
      * @see Quad_Graph
      */
-    graph: Quad_Graph;
+    graph: Role.Graph<RdfMode>;
+}
 
+/**
+ * An RDF quad, containing the subject, predicate, object and graph terms.
+ */
+ export interface QuadPattern<
+    RdfMode extends AllowedRdfMode=RdfMode_star,
+    LiteralDataype extends Role.Datatype=Role.Datatype<RdfMode>
+ > {
     /**
-     * @param other The term to compare with.
-     * @return True if and only if the argument is a) of the same type b) has all components equal.
+     * The subject.
+     * @see Quad_Subject
      */
-    equals(other: Term | null | undefined): boolean;
+    subject: Pattern.Subject<RdfMode>;
+    /**
+     * The predicate.
+     * @see Quad_Predicate
+     */
+    predicate: Pattern.Predicate<RdfMode>;
+    /**
+     * The object.
+     * @see Quad_Object
+     */
+    object: Pattern.Object<RdfMode, LiteralDataype>;
+    /**
+     * The named graph.
+     * @see Quad_Graph
+     */
+    graph: Pattern.Graph<RdfMode>;
 }
 
 /**
