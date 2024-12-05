@@ -84,6 +84,26 @@ function test_datafactory() {
 
     const variable: Variable = dataFactory.variable ? dataFactory.variable('v1') : <any> {};
 
+    const defaultGraph: DefaultGraph = dataFactory.defaultGraph();
+
+    type NamedNodeExt = NamedNode & { someProp: string };
+    const term1: NamedNode = dataFactory.fromTerm(<NamedNodeExt>{});
+    type BlankNodeExt = BlankNode & { someProp: string };
+    const term2: BlankNode = dataFactory.fromTerm(<BlankNodeExt>{});
+    type LiteralExt = Literal & { someProp: string };
+    const term3: Literal = dataFactory.fromTerm(<LiteralExt>{});
+    type VariableExt = Variable & { someProp: string };
+    const term4: Variable = dataFactory.fromTerm(<VariableExt> {});
+    type DefaultGraphExt = DefaultGraph & { someProp: string };
+    const term5: DefaultGraph = dataFactory.fromTerm(<DefaultGraphExt>{});
+
+    const quadFromQuad: Term = dataFactory.fromQuad(dataFactory.quad(
+        dataFactory.namedNode("x"),
+        dataFactory.namedNode("y"),
+        dataFactory.literal(""),
+        dataFactory.defaultGraph()
+    ));
+
     const term: NamedNode = <any> {};
     interface QuadBnode extends BaseQuad {
       subject: Term;
@@ -119,6 +139,8 @@ function test_datafactory_star() {
         const equalToSelf: boolean = quadBobAge2.equals(quadBobAge);
         const notEqualToOtherType: boolean = quadBobAge2.equals(dataFactory.namedNode('ex:something:else'));
     }
+
+    const quadTerm: Quad = dataFactory.fromTerm(quadBobAge);
 }
 
 function test_datafactory_star_basequad() {
@@ -143,6 +165,21 @@ function test_datafactory_star_basequad() {
         const equalToSelf: boolean = quadBobAge2.equals(quadBobAge);
         const notEqualToOtherType: boolean = quadBobAge2.equals(dataFactory.namedNode('ex:something:else'));
     }
+
+    const baseQuadTerm: BaseQuad = dataFactory.fromTerm(quadBobAge);
+
+    const baseQuad: BaseQuad = dataFactory.fromQuad(quadBobAge);
+
+    // Test with regular Quad
+    const quadDataFactory: DataFactory<Quad> = <any> {};
+
+    const regularQuadBobAge: Quad = quadDataFactory.quad(
+        dataFactory.namedNode('ex:bob'),
+        dataFactory.namedNode('ex:age'),
+        dataFactory.literal('23'),
+    );
+
+    const quadTerm: Quad = quadDataFactory.fromTerm(regularQuadBobAge);
 }
 
 function test_stream() {
