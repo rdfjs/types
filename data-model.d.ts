@@ -298,7 +298,7 @@ export interface DataFactory<OutQuad extends BaseQuad = Quad, InQuad extends Bas
     fromTerm<T extends Literal>(original: T): Literal;
     fromTerm<T extends Variable>(original: T): Variable;
     fromTerm<T extends DefaultGraph>(original: T): DefaultGraph;
-    fromTerm<T extends Quad>(original: T): OutQuad;
+    fromTerm<T extends BaseQuad>(original: T): OutQuad;
     fromTerm<T extends Term>(original: T): T;
 
     /**
