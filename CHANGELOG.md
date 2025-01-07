@@ -1,5 +1,16 @@
 # @rdfjs/types
 
+## 2.0.0
+
+### Major Changes
+
+- 14906cf: Add missing methods `fromTerm` and `fromQuad` to the `DataFactory` interface
+- 8e965db: In some cases, loaders would report an error similar to `Could not resolve "./data-model"`. This is fixed by using `export type *` but requires [TypeScript 5+](https://www.typescriptlang.org/docs/handbook/release-notes/typescript-5-0.html#support-for-export-type-)
+
+### Minor Changes
+
+- 46acfbb: Add optional direction for literals
+
 ## 1.1.2
 
 ### Patch Changes
