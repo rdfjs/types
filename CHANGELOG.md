@@ -1,5 +1,11 @@
 # @rdfjs/types
 
+## 2.0.1
+
+### Patch Changes
+
+- 6f54811: Remove generic parameters from `DataFactory#fromTerm()` overloads which caused incompatibility with `@rdfjs/types` v1
+
 ## 2.0.0
 
 ### Major Changes
