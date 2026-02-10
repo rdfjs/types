@@ -261,9 +261,9 @@ export interface DataFactory<OutQuad extends BaseQuad = Quad, InQuad extends Bas
      * @param value              The literal value.
      * @param languageOrDatatype The optional language, datatype, or directional language.
      *                           If `languageOrDatatype` is a NamedNode,
-     *                           then it is used for the value of `NamedNode.datatype`.
-     *                           If `languageOrDatatype` is a NamedNode, it is used for the value
-     *                           of `NamedNode.language`.
+     *                           then it is used for the value of `Literal.datatype`.
+     *                           If `languageOrDatatype` is a string, it is used for the value
+     *                           of `Literal.language`.
      *                           Otherwise, it is used as a directional language,
      *                           from which the language is set to `languageOrDatatype.language`
      *                           and the direction to `languageOrDatatype.direction`.
