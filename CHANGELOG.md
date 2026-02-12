@@ -1,5 +1,11 @@
 # @rdfjs/types
 
+## 2.0.2
+
+### Patch Changes
+
+- c635435: Corrected the TSDoc of literal's languageOrDatatype
+
 ## 2.0.1
 
 ### Patch Changes
