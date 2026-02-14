@@ -29,7 +29,7 @@ export interface NamedNode<Iri extends string = string> {
      * @param other The term to compare with.
      * @return True if and only if other has termType "NamedNode" and the same `value`.
      */
-    equals(other: Term | null | undefined): boolean;
+    equals<T extends Term = Term>(other: T | null | undefined): this is T;
 }
 
 /**
@@ -52,7 +52,7 @@ export interface BlankNode {
      * @param other The term to compare with.
      * @return True if and only if other has termType "BlankNode" and the same `value`.
      */
-    equals(other: Term | null | undefined): boolean;
+    equals<T extends Term = Term>(other: T | null | undefined): this is T;
 }
 
 /**
@@ -87,7 +87,7 @@ export interface Literal {
      * @return True if and only if other has termType "Literal"
      *                   and the same `value`, `language`, `direction`, and `datatype`.
      */
-    equals(other: Term | null | undefined): boolean;
+    equals<T extends Term = Term>(other: T | null | undefined): this is T;
 }
 
 /**
@@ -107,7 +107,7 @@ export interface Variable {
      * @param other The term to compare with.
      * @return True if and only if other has termType "Variable" and the same `value`.
      */
-    equals(other: Term | null | undefined): boolean;
+    equals<T extends Term = Term>(other: T | null | undefined): this is T;
 }
 
 /**
@@ -128,7 +128,7 @@ export interface DefaultGraph {
      * @param other The term to compare with.
      * @return True if and only if other has termType "DefaultGraph".
      */
-    equals(other: Term | null | undefined): boolean;
+    equals<T extends Term = Term>(other: T | null | undefined): this is T;
 }
 
 /**
@@ -202,7 +202,7 @@ export interface BaseQuad {
      * @param other The term to compare with.
      * @return True if and only if the argument is a) of the same type b) has all components equal.
      */
-    equals(other: Term | null | undefined): boolean;
+    equals<T extends Term = Term>(other: T | null | undefined): this is T;
 }
 
 /**
@@ -234,7 +234,7 @@ export interface Quad extends BaseQuad {
      * @param other The term to compare with.
      * @return True if and only if the argument is a) of the same type b) has all components equal.
      */
-    equals(other: Term | null | undefined): boolean;
+    equals<T extends Term = Term>(other: T | null | undefined): this is T;
 }
 
 /**
