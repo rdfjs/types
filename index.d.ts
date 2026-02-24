@@ -1,6 +1,6 @@
 /// <reference types="node" />
 
-export type * from './data-model';
-export type * from './stream';
-export type * from './dataset';
-export type * from './query';
+export type * from './data-model.js';
+export type * from './stream.js';
+export type * from './dataset.js';
+export type * from './query.js';

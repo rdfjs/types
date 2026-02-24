@@ -2,7 +2,7 @@
 /* https://rdf.js.org/query-spec/ */
 
 import { EventEmitter } from "events";
-import * as RDF from '../data-model';
+import * as RDF from '../data-model.js';
 
 /**
  * Helper union type for triple term names.

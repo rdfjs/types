@@ -4,7 +4,7 @@
 import * as stream from "stream";
 import { EventEmitter } from "events";
 
-import { BaseQuad, Quad, Term } from './data-model';
+import { BaseQuad, Quad, Term } from './data-model.js';
 
 // TODO: merge this with ResultStream upon the next major change
 /**

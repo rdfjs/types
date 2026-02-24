@@ -10,16 +10,16 @@ import {
     MetadataOpts,
     QueryStringContext,
     QueryAlgebraContext,
-    AllMetadataSupport, 
-    Query, 
-    Variable, 
-    ResultStream, 
-    Quad, 
-    StringSparqlQueryable, 
-    AlgebraSparqlQueryable, 
-    BindingsResultSupport, 
+    AllMetadataSupport,
+    Query,
+    Variable,
+    ResultStream,
+    Quad,
+    StringSparqlQueryable,
+    AlgebraSparqlQueryable,
+    BindingsResultSupport,
     QuadsResultSupport,
-} from ".";
+} from "./index.js";
 
 function test_bindings() {
     const df: DataFactory = <any> {};
