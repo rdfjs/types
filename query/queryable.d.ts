@@ -1,8 +1,8 @@
 /* Query Interfaces - Queryable */
 /* https://rdf.js.org/query-spec/ */
 
-import * as RDF from '../data-model';
-import { Bindings, Query, ResultStream } from './common';
+import * as RDF from '../data-model.js';
+import { Bindings, Query, ResultStream } from './common.js';
 
 /**
  * Context properties provide a way to pass additional bits information to the query engine when executing a query.

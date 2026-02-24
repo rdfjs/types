@@ -1,7 +1,7 @@
 /* Query Interfaces */
 /* https://rdf.js.org/query-spec/ */
 
-export * from './query/common';
-export * from './query/queryable';
+export * from './query/common.js';
+export * from './query/queryable.js';
 
 
