@@ -1,5 +1,5 @@
 import { BlankNode, DataFactory, Dataset, DatasetCore, DatasetCoreFactory, DatasetFactory, DefaultGraph, Literal,
-  NamedNode, Quad, BaseQuad, Sink, Source, Store, Stream, Term, Variable, Quad_Graph } from "./index.js";
+  NamedNode, Quad, BaseQuad, Sink, Source, Store, Stream, Term, Variable, Quad_Graph, Quad_Subject } from "./index.js";
 import { EventEmitter } from "events";
 
 function test_terms() {
@@ -104,6 +104,12 @@ function test_datafactory() {
     type DefaultGraphExt = DefaultGraph & { someProp: string };
     const term5: DefaultGraph = dataFactory.fromTerm(<DefaultGraphExt>{});
 
+    // Union-typed arguments are accepted, as required by the spec's `Term fromTerm(Term original)`.
+    const someTerm: Term = <any> {};
+    const term6: Term = dataFactory.fromTerm(someTerm);
+    const someSubject: Quad_Subject = <any> {};
+    const term7: Term = dataFactory.fromTerm(someSubject);
+
     const quadFromQuad: Term = dataFactory.fromQuad(dataFactory.quad(
         dataFactory.namedNode("x"),
         dataFactory.namedNode("y"),
@@ -187,6 +193,13 @@ function test_datafactory_star_basequad() {
     );
 
     const quadTerm: Quad = quadDataFactory.fromTerm(regularQuadBobAge);
+
+    // A union-typed argument yields the factory's own quad type, not `BaseQuad`.
+    const someTerm: Term = <any> {};
+    const termFromUnion = quadDataFactory.fromTerm(someTerm);
+    if (termFromUnion.termType === 'Quad') {
+        const narrowedQuad: Quad = termFromUnion;
+    }
 }
 
 function test_stream() {
