@@ -1,5 +1,17 @@
 # @rdfjs/types
 
+## 2.1.0
+
+### Minor Changes
+
+- 99f94d6: Added [`this`-based type guards](https://www.typescriptlang.org/docs/handbook/2/classes.html#this-based-type-guards) to `Term#equals` methods
+
+### Patch Changes
+
+- a037cb5: Restore a catch-all `DataFactory#fromTerm()` overload so that arguments typed as the `Term` union are accepted, as required by the RDF/JS Data Model spec
+- c635435: Corrected the TSDoc of literal's languageOrDatatype
+- dd68d36: Fix TS2834 on relative imports when projects use `moduleResolution` equal `Node16` or `NodeNext`
+
 ## 2.0.1
 
 ### Patch Changes
