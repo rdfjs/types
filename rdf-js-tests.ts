@@ -1,5 +1,6 @@
 import { BlankNode, DataFactory, Dataset, DatasetCore, DatasetCoreFactory, DatasetFactory, DefaultGraph, Literal,
-  NamedNode, Quad, BaseQuad, Sink, Source, Store, Stream, Term, Variable, Quad_Graph, Quad_Subject } from "./index.js";
+  NamedNode, Quad, BaseQuad, Sink, Source, Store, Stream, Term, Variable, Quad_Graph, Quad_Subject,
+  BgpMatchable, Bindings } from "./index.js";
 import { EventEmitter } from "events";
 
 function test_terms() {
@@ -542,4 +543,21 @@ function testInheritance() {
     const datasetUnion: Dataset = datasetExt.union();
     const datasetFilter: Dataset = datasetExt.filter();
     const datasetDifference: Dataset = datasetExt.difference();
+}
+
+function testBgpMatchable() {
+    const quad: Quad = <any> {};
+    const baseQuad: BaseQuad = <any> {};
+
+    const matchable: BgpMatchable = <any> {};
+    const solutions1: Iterable<Bindings> = matchable.matchBGP([quad, quad]);
+    const solutions2: Iterable<Bindings> = matchable.matchBGP(new Set([quad]));
+    // @ts-expect-error A BaseQuad may hold terms that a Quad pattern cannot
+    matchable.matchBGP([baseQuad]);
+
+    const baseMatchable: BgpMatchable<BaseQuad> = <any> {};
+    const solutions3: Iterable<Bindings> = baseMatchable.matchBGP([baseQuad, quad]);
+
+    const dataset: DatasetCore & BgpMatchable = <any> {};
+    const datasetSolutions: Iterable<Bindings> = dataset.matchBGP(dataset.match());
 }

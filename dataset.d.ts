@@ -3,6 +3,7 @@
 
 import { Quad, BaseQuad, Term } from './data-model.js';
 import { Stream } from './stream.js';
+import { Bindings } from './query/common.js';
 
 export interface DatasetCore<OutQuad extends BaseQuad = Quad, InQuad extends BaseQuad = OutQuad> {
     /**
@@ -201,4 +202,26 @@ export interface DatasetFactory<OutQuad extends BaseQuad = Quad, InQuad extends 
      * Returns a new dataset and imports all quads, if given.
      */
     dataset(quads?: Dataset<InQuad>|InQuad[]): D;
+}
+
+/**
+ * An object that can match a basic graph pattern against its quads.
+ *
+ * A basic graph pattern is a set of quad patterns whose terms may be variables.
+ * A solution binds every variable so that all patterns match quads of the dataset at once:
+ * a variable that occurs in several patterns, or several times in one pattern, is bound to the same term everywhere.
+ *
+ * This interface is optional; it can be implemented alongside `DatasetCore` by datasets that can join patterns
+ * more efficiently than repeated calls to `DatasetCore.match`.
+ */
+export interface BgpMatchable<Q extends BaseQuad = Quad, B extends Bindings = Bindings> {
+    /**
+     * Returns one bindings object for every solution of the basic graph pattern.
+     *
+     * Each solution maps every variable in the patterns to the term it is bound to.
+     * The order of the solutions is arbitrary.
+     *
+     * @param patterns The quad patterns of the basic graph pattern; their terms may be variables.
+     */
+    matchBGP(patterns: Iterable<Q>): Iterable<B>;
 }
