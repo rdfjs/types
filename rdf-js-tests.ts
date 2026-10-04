@@ -1,5 +1,6 @@
 import { BlankNode, DataFactory, Dataset, DatasetCore, DatasetCoreFactory, DatasetFactory, DefaultGraph, Literal,
-  NamedNode, Quad, BaseQuad, Sink, Source, Store, Stream, Term, Variable, Quad_Graph, Quad_Subject } from "./index.js";
+  NamedNode, Quad, BaseQuad, Sink, Source, Store, Stream, Term, Variable, Quad_Graph, Quad_Subject,
+  QuadPattern, QuadPatternDatasetCore, TermPattern } from "./index.js";
 import { EventEmitter } from "events";
 
 function test_terms() {
@@ -542,4 +543,28 @@ function testInheritance() {
     const datasetUnion: Dataset = datasetExt.union();
     const datasetFilter: Dataset = datasetExt.filter();
     const datasetDifference: Dataset = datasetExt.difference();
+}
+
+function testQuadPatterns() {
+    const term: Term = <any> {};
+    const namedNode: NamedNode = <any> {};
+
+    const any: QuadPattern = [];
+    const subjectOnly: QuadPattern = [term];
+    const full: QuadPattern = [term, null, undefined, term];
+    const nested: QuadPattern = [[namedNode, null, null], namedNode, null];
+    const termPatterns: TermPattern[] = [term, null, undefined, nested];
+    // @ts-expect-error A quad pattern has at most four positions
+    const tooLong: QuadPattern = [term, term, term, term, term];
+
+    const dataset: QuadPatternDatasetCore = <any> {};
+    const match1: QuadPatternDatasetCore = dataset.match(null, namedNode, [namedNode, null, null]);
+    const match2: QuadPatternDatasetCore = dataset.match(nested, null, null, null);
+    const match3: DatasetCore = dataset.match(term, term, term, term);
+    // @ts-expect-error Predicates cannot be quad terms
+    dataset.match(null, [namedNode, null, null]);
+
+    // Existing DatasetCore implementations and callers are unaffected
+    const datasetCore: DatasetCore = dataset;
+    const coreMatch: DatasetCore = datasetCore.match(term, term, term, term);
 }

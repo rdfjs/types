@@ -1,7 +1,7 @@
 /* Dataset Interfaces */
 /* https://rdf.js.org/dataset-spec/ */
 
-import { Quad, BaseQuad, Term } from './data-model.js';
+import { Quad, BaseQuad, Term, TermPattern } from './data-model.js';
 import { Stream } from './stream.js';
 
 export interface DatasetCore<OutQuad extends BaseQuad = Quad, InQuad extends BaseQuad = OutQuad> {
@@ -201,4 +201,26 @@ export interface DatasetFactory<OutQuad extends BaseQuad = Quad, InQuad extends 
      * Returns a new dataset and imports all quads, if given.
      */
     dataset(quads?: Dataset<InQuad>|InQuad[]): D;
+}
+
+/**
+ * A `DatasetCore` whose `match` method also accepts `QuadPattern`s, to match quads by the components of the quad terms
+ * (triple terms) they contain.
+ *
+ * This interface is optional and extends `DatasetCore` without changing it,
+ * so datasets that do not implement it keep matching quad terms exactly.
+ */
+export interface QuadPatternDatasetCore<OutQuad extends BaseQuad = Quad, InQuad extends BaseQuad = OutQuad> extends DatasetCore<OutQuad, InQuad> {
+    /**
+     * Returns a new dataset that is comprised of all quads in the current instance matching the given arguments.
+     *
+     * Arguments that are terms or `null`/`undefined` are matched as in `DatasetCore.match`.
+     * A `QuadPattern` argument matches quad terms whose components match its entries.
+     *
+     * @param subject   The optional exact subject, or pattern of a quad term subject, to match.
+     * @param predicate The optional exact predicate to match.
+     * @param object    The optional exact object, or pattern of a quad term object, to match.
+     * @param graph     The optional exact graph, or pattern of a quad term graph, to match.
+     */
+    match(subject?: TermPattern, predicate?: Term | null, object?: TermPattern, graph?: TermPattern): QuadPatternDatasetCore<OutQuad, InQuad>;
 }

@@ -238,6 +238,23 @@ export interface Quad extends BaseQuad {
 }
 
 /**
+ * A pattern that matches quad terms (triple terms) by their components.
+ *
+ * The entries are patterns for the subject, predicate, object and graph of the quad term, in that order.
+ * A missing, `null` or `undefined` entry matches any component, a term matches components it equals,
+ * and a nested `QuadPattern` matches nested quad terms in the same way.
+ *
+ * For example, `[s, null, null]` matches every quad term with subject `s`.
+ */
+export type QuadPattern = readonly [subject?: TermPattern, predicate?: TermPattern, object?: TermPattern, graph?: TermPattern];
+
+/**
+ * A pattern for one position of a quad: a term to match exactly, a `QuadPattern` to match quad terms by their
+ * components, or `null` or `undefined` to match any term.
+ */
+export type TermPattern = Term | QuadPattern | null | undefined;
+
+/**
  * A factory for instantiating RDF terms and quads.
  */
 export interface DataFactory<OutQuad extends BaseQuad = Quad, InQuad extends BaseQuad = OutQuad> {
